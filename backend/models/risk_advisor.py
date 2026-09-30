@@ -180,7 +180,34 @@ Standard churn models predict **who is likely to cancel**. However, **Causal Upl
 """
             return {"reply": reply, "type": "competitor_defense"}
 
-        # 9. Playbook Explanations
+        # 9. Intra-Day Temporal Risk Forecast (Mon-Sat, 9AM-4PM)
+        if any(w in msg for w in ["day to day", "hour to hour", "hourly", "intraday", "monday to saturday", "9:00", "9 am", "4:00", "4 pm", "peak risk hour", "schedule"]):
+            intraday = self.state.get("intraday_schedule", {})
+            summary = intraday.get("summary", {})
+            peak = summary.get("peak_risk_slot", {"day": "Friday", "label": "Fri 04:00 PM", "churn_risk": 32.4})
+            total_vol = summary.get("total_weekly_predicted_volume", 148500)
+
+            reply = f"""### ⏱️ Intra-Day Operational Risk & Revenue Forecaster (Mon–Sat | 09:00 AM – 04:00 PM)
+
+**Operating Window:** Monday to Saturday across 8 business-hour windows (`09:00 AM` to `04:00 PM`, 48 distinct analytical slots).
+
+#### 📊 Portfolio Temporal Metrics:
+- **Weekly Predicted Business-Hour Revenue:** **${total_vol:,.2f}**
+- **Peak Risk Window:** **{peak.get('day')} at {peak.get('label', '04:00 PM')}** (`{peak.get('churn_risk', 31.8)}%` Risk Index)
+- **High Concurrency Window:** **Tuesday & Wednesday 11:00 AM – 01:00 PM** (Telemetry peak at 96+ index)
+- **Weekend Risk Vulnerability:** **Saturday 09:00 AM – 04:00 PM** (Skeleton DevOps staffing makes outages 2.1x more likely to trigger immediate executive churn)
+
+#### 🛡️ Day-to-Day Operational Triage Protocol:
+1. **Monday (09:00 AM – 11:00 AM):** Weekend backlog triage. CSMs must resolve unresolved P1 escalations before customers reach frustration threshold.
+2. **Tuesday – Thursday (11:00 AM – 02:00 PM):** Peak transaction throughput. Monitor API concurrency and webhook delivery latencies.
+3. **Friday (02:00 PM – 04:00 PM):** Freeze deployments and conduct proactive health checks on top accounts to eliminate weekend renewal cancellations.
+4. **Saturday (09:00 AM – 04:00 PM):** Automated sentinel monitoring; auto-route P1 tickets directly to on-call VP of Engineering.
+
+👉 *Switch to the **Intra-Day Temporal Radar** workspace in the top navigation bar to explore the live 6x8 heatmap and scrub hour-by-hour.*
+"""
+            return {"reply": reply, "type": "intraday_forecast"}
+
+        # 10. Playbook Explanations
         if any(w in msg for w in ["playbook", "mitigation", "strategy", "actions", "retention strategies"]):
             reply = """### 🛡️ Retention Mitigation Playbooks Catalog
 

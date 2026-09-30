@@ -281,6 +281,11 @@
         <span>Customer 360 & Early Warning Table</span>
       </button>
 
+      <button onclick="switchTab('intraday')" id="tabBtn-intraday" class="tab-btn whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent transition-all">
+        <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>⏱️ Intra-Day Temporal Radar (Mon–Sat • 9 AM–4 PM)</span>
+      </button>
+
       <button onclick="switchTab('whatif')" id="tabBtn-whatif" class="tab-btn whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent transition-all">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
         <span>Causal Uplift & What-If ROI Lab</span>
@@ -435,6 +440,173 @@
             <button onclick="prevTablePage()" id="prevPageBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed">Previous</button>
             <span id="pageIndicator" class="font-mono text-slate-200 font-bold px-2">Page 1 of 80</span>
             <button onclick="nextTablePage()" id="nextPageBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2.5: Intra-Day Temporal Radar (Mon–Sat | 9 AM – 4 PM) -->
+    <div id="tabContent-intraday" class="hidden space-y-6">
+      <!-- Operational Control Header -->
+      <div class="glass-card rounded-2xl p-5 border border-cyan-500/30 shadow-lg shadow-cyan-500/5 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold uppercase tracking-wider">Temporal Predictive Forecast</span>
+              <span class="text-xs text-slate-400 font-mono">Operating Window: Mon–Sat • 09:00 AM – 04:00 PM</span>
+            </div>
+            <h2 class="text-lg font-bold text-white mt-1 flex items-center gap-2">
+              <span>⏱️ Intra-Day Temporal Predictive Radar</span>
+              <span class="text-xs font-normal text-slate-400">• Day-to-Day & Hour-to-Hour Telemetry, Risk & Revenue</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">Forecast dynamic churn probability, telemetry velocity, and transaction revenue across 48 operational business-hour intervals.</p>
+          </div>
+
+          <!-- Live Time Display & Simulation Controls -->
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 flex items-center gap-2.5 shadow-inner">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Active Analysis Slot</div>
+                <div class="text-sm font-extrabold text-cyan-300 font-mono" id="intradayActiveSlotLabel">Wednesday • 11:00 AM</div>
+              </div>
+            </div>
+
+            <button id="intradayPlayBtn" onclick="toggleIntraDayAutoPlay()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs shadow-md shadow-cyan-500/25 flex items-center gap-2 transition-all transform active:scale-95">
+              <svg id="intradayPlayIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span id="intradayPlayText">Auto-Play Week</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Operating Day Selector Pills & Hour Scrub -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1" id="intradayDayPills">
+            <!-- Monday through Saturday pills rendered dynamically -->
+          </div>
+
+          <!-- Hour Range Slider -->
+          <div class="flex items-center gap-3 bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-800">
+            <button onclick="stepIntraDayHour(-1)" class="p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Previous Hour">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-slate-400 font-mono">09:00</span>
+              <input type="range" id="intradayHourSlider" min="9" max="16" value="11" step="1" oninput="onIntraDayHourSlider(this.value)" class="w-36 accent-cyan-400 cursor-pointer">
+              <span class="text-[10px] text-slate-400 font-mono">16:00</span>
+            </div>
+            <button onclick="stepIntraDayHour(1)" class="p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Next Hour">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Slot KPI Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Metric 1: Projected Revenue this Hour -->
+        <div class="glass-card rounded-xl p-4 border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-medium">Hourly Projected Revenue</div>
+          <div class="text-xl lg:text-2xl font-black text-emerald-400 font-mono mt-1" id="slotRevenueDisplay">$0</div>
+          <div class="text-[10px] text-slate-400 mt-1" id="slotRevenueSub">Active operational throughput</div>
+        </div>
+
+        <!-- Metric 2: Dynamic Churn Risk Index -->
+        <div class="glass-card rounded-xl p-4 border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-medium">Hourly Churn Risk Index</div>
+          <div class="text-xl lg:text-2xl font-black text-cyan-300 font-mono mt-1" id="slotChurnDisplay">0.0%</div>
+          <div class="text-[10px] text-slate-400 mt-1" id="slotChurnSub">Platt calibrated sensitivity</div>
+        </div>
+
+        <!-- Metric 3: Telemetry Concurrency Pulse -->
+        <div class="glass-card rounded-xl p-4 border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-medium">Telemetry Pulse Velocity</div>
+          <div class="text-xl lg:text-2xl font-black text-blue-400 font-mono mt-1" id="slotVelocityDisplay">0.0 / 100</div>
+          <div class="text-[10px] text-slate-400 mt-1" id="slotVelocitySub">API & user concurrency</div>
+        </div>
+
+        <!-- Metric 4: Incident Escalation Probability -->
+        <div class="glass-card rounded-xl p-4 border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-medium">Incident Escalation Risk</div>
+          <div class="text-xl lg:text-2xl font-black text-purple-400 font-mono mt-1" id="slotIncidentDisplay">0.0%</div>
+          <div class="text-[10px] text-slate-400 mt-1" id="slotIncidentSub">P1 outage likelihood</div>
+        </div>
+      </div>
+
+      <!-- Main Visualizations: Heatmap & Timeseries (2 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: 6x8 Heatmap Matrix + Timeseries Curve (7 Cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          <!-- 6x8 Heatmap Matrix -->
+          <div class="glass-card rounded-2xl p-5 border border-slate-800">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <span>📅 Operational Risk Heatmap Matrix (Mon–Sat • 9 AM–4 PM)</span>
+                </h3>
+                <p class="text-[11px] text-slate-400">Click any hour slot to inspect account risk and operational guidance.</p>
+              </div>
+              <!-- Legend -->
+              <div class="flex items-center gap-2 text-[10px]">
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-emerald-500/40 border border-emerald-500/60"></span> &lt;15%</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-blue-500/40 border border-blue-500/60"></span> 15-22%</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-500/40 border border-amber-500/60"></span> 22-28%</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-rose-500/40 border border-rose-500/60"></span> &gt;28%</span>
+              </div>
+            </div>
+
+            <!-- Heatmap Table Container -->
+            <div class="overflow-x-auto">
+              <div id="intradayHeatmapGrid" class="space-y-1.5 min-w-[500px]">
+                <!-- Populated dynamically: 6 rows x 8 columns -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeseries Chart -->
+          <div class="glass-card rounded-2xl p-5 border border-slate-800">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-white">📈 Full Week Diurnal Progression (48 Hourly Intervals)</h3>
+              <span class="text-[10px] text-slate-400 font-mono">Mon 09:00 -> Sat 16:00</span>
+            </div>
+            <div class="h-60 w-full relative">
+              <canvas id="intradayTimeseriesChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Operational Prescription & Account Triage (5 Cols) -->
+        <div class="lg:col-span-5 space-y-6">
+          <!-- Operational Prescription Card -->
+          <div class="glass-card rounded-2xl p-5 border border-cyan-500/30 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold uppercase">Operational Protocol</span>
+              <span class="text-xs text-slate-400 font-mono" id="slotSeverityBadge">Nominal</span>
+            </div>
+            <div>
+              <div class="text-[11px] text-slate-400 font-medium">Operational Window Focus:</div>
+              <div class="text-xs font-bold text-white mt-0.5" id="slotFocusDisplay">Morning Login Wave & Incident Triage</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+              <div class="text-[11px] text-cyan-300 font-semibold flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Recommended Action:</span>
+              </div>
+              <p class="text-xs text-slate-200 mt-1 leading-relaxed" id="slotActionDisplay">Deploy white-glove monitoring across enterprise clusters.</p>
+            </div>
+          </div>
+
+          <!-- Accounts at Risk for Selected Hour Slot -->
+          <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                <span>⚠️ Accounts Requiring Triage During This Slot</span>
+              </h3>
+              <span class="text-[10px] text-slate-400" id="slotAtRiskCount">3 accounts</span>
+            </div>
+            <div id="slotAtRiskList" class="space-y-2">
+              <!-- Dynamically populated at-risk account cards with Inspect 360 buttons -->
+            </div>
           </div>
         </div>
       </div>
@@ -923,6 +1095,8 @@
 
     <!-- Quick Prompt Chips with Emergency Hotline -->
     <div class="px-3 py-2 bg-slate-950/80 border-t border-slate-800/80 overflow-x-auto flex items-center gap-1.5 text-[10px] whitespace-nowrap">
+      <button onclick="runQuickPrompt('Hourly risk forecast (Mon-Sat, 9AM-4PM)')" class="px-2.5 py-1 rounded-full bg-cyan-950/40 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-500/40 flex items-center gap-1 font-semibold">⏱️ Hourly Forecast (Mon-Sat)</button>
+      <button onclick="runQuickPrompt('Which hour has the peak churn risk?')" class="px-2.5 py-1 rounded-full bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-500/30">⚡ Peak Risk Window</button>
       <button onclick="runQuickPrompt('EMERGENCY: Customer is threatening to cancel today!')" class="px-2.5 py-1 rounded-full bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-500/50 flex items-center gap-1 font-bold animate-pulse">🚨 Cancellation Threat!</button>
       <button onclick="runQuickPrompt('Customer facing budget cuts and wants to downsize')" class="px-2.5 py-1 rounded-full bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 border border-amber-500/40 flex items-center gap-1 font-semibold">📉 Budget Cuts</button>
       <button onclick="runQuickPrompt('Competitor is offering 30% lower price to poach account')" class="px-2.5 py-1 rounded-full bg-purple-950/40 hover:bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center gap-1 font-semibold">🛑 Competitor Threat</button>
@@ -963,6 +1137,13 @@
         incentive: 12,
         intensity: 1.0,
         riskTiers: ['Critical', 'High']
+      },
+      intraday: {
+        selectedDay: 'Wednesday',
+        selectedHour: 11,
+        isPlaying: false,
+        playTimer: null,
+        data: null
       }
     };
 
@@ -972,6 +1153,7 @@
     let waterfallChart = null;
     let kmChart = null;
     let hazardChart = null;
+    let intradayChart = null;
 
     // --- Canvas Confetti Celebration Particle Burst ---
     function triggerConfetti() {
@@ -1253,6 +1435,8 @@
       renderCohorts();
       renderSurvivalCharts();
       runWhatIfSimulation();
+      await loadIntraDaySchedule();
+      renderIntraDayWorkspace();
     }
 
     // --- Render KPIs ---
@@ -2022,6 +2206,452 @@
       showToast('CSV Export Ready', `Exported ${appState.filteredCustomers.length} accounts to spreadsheet.`, 'info');
     }
 
+    // --- Intra-Day Temporal Predictive Engine (Mon-Sat, 9AM-4PM) ---
+    const OPERATING_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const OPERATING_HOURS = [9, 10, 11, 12, 13, 14, 15, 16];
+    const HOUR_LABELS = {
+      9: "09:00 AM", 10: "10:00 AM", 11: "11:00 AM", 12: "12:00 PM",
+      13: "01:00 PM", 14: "02:00 PM", 15: "03:00 PM", 16: "04:00 PM"
+    };
+
+    const DAY_PROFILES = {
+      "Monday": { base_vol: 1.15, risk_mult: 1.25, desc: "Post-weekend triage & ticket backlog resolution" },
+      "Tuesday": { base_vol: 1.35, risk_mult: 0.95, desc: "Peak operational velocity & transaction throughput" },
+      "Wednesday": { base_vol: 1.40, risk_mult: 0.90, desc: "Core mid-week enterprise platform stability" },
+      "Thursday": { base_vol: 1.30, risk_mult: 1.05, desc: "High deployment volume & release integrations" },
+      "Friday": { base_vol: 1.10, risk_mult: 1.35, desc: "Pre-weekend escalation risk & freeze windows" },
+      "Saturday": { base_vol: 0.65, risk_mult: 1.45, desc: "Off-peak skeleton crew; critical outages carry 2x churn impact" }
+    };
+
+    const HOUR_PROFILES = {
+      9: { traffic_pct: 0.75, risk_bias: 1.20, focus: "Morning Login Wave & Incident Triage" },
+      10: { traffic_pct: 1.10, risk_bias: 1.10, focus: "Peak Morning API Throughput" },
+      11: { traffic_pct: 1.25, risk_bias: 0.95, focus: "High-Concurrency Workload Peak" },
+      12: { traffic_pct: 0.90, risk_bias: 0.85, focus: "Midday Transition & Scheduled Jobs" },
+      13: { traffic_pct: 1.05, risk_bias: 0.90, focus: "Afternoon Operational Resumption" },
+      14: { traffic_pct: 1.20, risk_bias: 1.15, focus: "Critical Escalation & Review Window" },
+      15: { traffic_pct: 1.15, risk_bias: 1.25, focus: "End-of-Day Settlement & SLA Audits" },
+      16: { traffic_pct: 0.85, risk_bias: 1.30, focus: "Daily Close & Escalation Handoff" }
+    };
+
+    function generateClientIntraDaySchedule() {
+      const customers = appState.customers || [];
+      const totalMRR = customers.reduce((sum, c) => sum + (c.monthly_contract_value || 0), 0) || 1200000;
+      const hourlyBaseRev = totalMRR / (24 * 7);
+      const baseChurn = customers.length ? (customers.reduce((sum, c) => sum + c.churn_probability, 0) / customers.length) * 100 : 18.5;
+
+      const schedule = {};
+      const heatmap = [];
+      const timeseries = [];
+      let slotIdx = 0;
+
+      const criticalPool = [...customers].sort((a, b) => b.clv_at_risk - a.clv_at_risk);
+
+      OPERATING_DAYS.forEach((day, dIdx) => {
+        schedule[day] = {};
+        const dayMeta = DAY_PROFILES[day];
+        const row = [];
+
+        OPERATING_HOURS.forEach((hour, hIdx) => {
+          const hourMeta = HOUR_PROFILES[hour];
+          const seed = (dIdx * 17 + hIdx * 13) % 19;
+          const variance = 1.0 + (Math.sin(seed) * 0.08);
+
+          const rev = Math.round(hourlyBaseRev * dayMeta.base_vol * hourMeta.traffic_pct * variance * 100) / 100;
+          const combinedMult = dayMeta.risk_mult * hourMeta.risk_bias * variance;
+          const churn = Math.round(Math.min(78.5, Math.max(3.5, baseChurn * combinedMult)) * 100) / 100;
+          const velocity = Math.round(Math.min(99.5, Math.max(15.0, 72.0 * dayMeta.base_vol * hourMeta.traffic_pct * variance)) * 10) / 10;
+          const incident = Math.round(Math.min(92.0, Math.max(2.0, 18.0 * (churn / 22.0) * variance)) * 10) / 10;
+
+          const stagger = (dIdx * 4 + hIdx * 2) % Math.max(1, criticalPool.length - 3);
+          const atRiskAccounts = criticalPool.slice(stagger, stagger + 3).map(acc => ({
+            customer_id: acc.customer_id,
+            company_name: acc.company_name,
+            tier: acc.tier,
+            churn_probability: Math.round(acc.churn_probability * combinedMult * 0.95 * 1000) / 1000,
+            clv_at_risk: acc.clv_at_risk,
+            hourly_trigger: `${acc.risk_drivers && acc.risk_drivers[0] ? acc.risk_drivers[0].factor : 'Concurrency Surge'} (${HOUR_LABELS[hour]})`
+          }));
+
+          let actionRec = `[NOMINAL] High telemetry stability across ${day} (${HOUR_LABELS[hour]})`;
+          let severity = "Nominal";
+          if (churn > 28.0 || incident > 40.0) {
+            actionRec = `[CRITICAL ALERT] Mobilize high-touch CSM & standby engineering for ${day} ${HOUR_LABELS[hour]}`;
+            severity = "Critical";
+          } else if (churn > 20.0) {
+            actionRec = `[ELEVATED RISK] Verify API latency & webhook retry rates for ${day} (${HOUR_LABELS[hour]})`;
+            severity = "High";
+          }
+
+          const slotData = {
+            day: day,
+            hour: hour,
+            hour_label: HOUR_LABELS[hour],
+            predicted_revenue: rev,
+            churn_risk_index_pct: churn,
+            telemetry_velocity: velocity,
+            incident_likelihood_pct: incident,
+            severity: severity,
+            operational_focus: hourMeta.focus,
+            action_recommendation: actionRec,
+            at_risk_accounts: atRiskAccounts
+          };
+
+          schedule[day][hour] = slotData;
+          row.push({
+            day: day,
+            hour: hour,
+            label: `${day.slice(0,3)} ${HOUR_LABELS[hour]}`,
+            churn_risk: churn,
+            revenue: rev,
+            telemetry: velocity,
+            severity: severity
+          });
+
+          timeseries.push({
+            index: slotIdx++,
+            day: day,
+            hour: hour,
+            label: `${day.slice(0,3)} ${HOUR_LABELS[hour]}`,
+            churn_risk: churn,
+            predicted_revenue: rev,
+            telemetry_velocity: velocity
+          });
+        });
+
+        heatmap.push(row);
+      });
+
+      return {
+        operating_days: OPERATING_DAYS,
+        operating_hours: OPERATING_HOURS,
+        hour_labels: OPERATING_HOURS.map(h => HOUR_LABELS[h]),
+        schedule: schedule,
+        heatmap: heatmap,
+        timeseries: timeseries,
+        summary: {
+          total_weekly_predicted_volume: Math.round(timeseries.reduce((s, p) => s + p.predicted_revenue, 0)),
+          peak_risk_slot: timeseries.reduce((max, p) => p.churn_risk > max.churn_risk ? p : max, timeseries[0]),
+          peak_velocity_slot: timeseries.reduce((max, p) => p.telemetry_velocity > max.telemetry_velocity ? p : max, timeseries[0]),
+          lowest_risk_slot: timeseries.reduce((min, p) => p.churn_risk < min.churn_risk ? p : min, timeseries[0])
+        }
+      };
+    }
+
+    async function loadIntraDaySchedule() {
+      try {
+        const res = await fetch('/api/intraday/schedule', { signal: AbortSignal.timeout(1200) });
+        if (res.ok) {
+          appState.intraday.data = await res.json();
+          return;
+        }
+      } catch (e) {}
+      appState.intraday.data = generateClientIntraDaySchedule();
+    }
+
+    function renderIntraDayWorkspace() {
+      if (!appState.intraday.data) {
+        appState.intraday.data = generateClientIntraDaySchedule();
+      }
+
+      const data = appState.intraday.data;
+      const currentDay = appState.intraday.selectedDay;
+      const currentHour = appState.intraday.selectedHour;
+
+      // 1. Day Pills
+      const pillsContainer = document.getElementById('intradayDayPills');
+      if (pillsContainer) {
+        pillsContainer.innerHTML = OPERATING_DAYS.map(day => {
+          const isActive = day === currentDay;
+          return `
+            <button onclick="selectIntraDaySlot('${day}', ${currentHour})" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+              isActive 
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400 shadow-md shadow-cyan-500/20' 
+                : 'bg-slate-900/90 text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700'
+            }">
+              ${day}
+            </button>
+          `;
+        }).join('');
+      }
+
+      // 2. Active Slot Data
+      const daySlots = (data.schedule && data.schedule[currentDay]) ? data.schedule[currentDay] : {};
+      const slot = daySlots[currentHour] || {};
+
+      document.getElementById('intradayActiveSlotLabel').innerText = `${currentDay} • ${HOUR_LABELS[currentHour] || '11:00 AM'}`;
+      document.getElementById('intradayHourSlider').value = currentHour;
+
+      // Slot KPIs
+      document.getElementById('slotRevenueDisplay').innerText = '$' + (slot.predicted_revenue || 0).toLocaleString();
+      document.getElementById('slotChurnDisplay').innerText = (slot.churn_risk_index_pct || 0).toFixed(1) + '%';
+      
+      const churnDisplay = document.getElementById('slotChurnDisplay');
+      if (slot.churn_risk_index_pct > 28) {
+        churnDisplay.className = 'text-xl lg:text-2xl font-black text-rose-400 font-mono mt-1';
+      } else if (slot.churn_risk_index_pct > 20) {
+        churnDisplay.className = 'text-xl lg:text-2xl font-black text-amber-400 font-mono mt-1';
+      } else {
+        churnDisplay.className = 'text-xl lg:text-2xl font-black text-cyan-300 font-mono mt-1';
+      }
+
+      document.getElementById('slotVelocityDisplay').innerText = (slot.telemetry_velocity || 0).toFixed(1) + ' / 100';
+      document.getElementById('slotIncidentDisplay').innerText = (slot.incident_likelihood_pct || 0).toFixed(1) + '%';
+      
+      // Operational Focus & Prescription
+      document.getElementById('slotFocusDisplay').innerText = slot.operational_focus || 'Platform Telemetry Monitoring';
+      document.getElementById('slotActionDisplay').innerText = slot.action_recommendation || 'All services operating nominally.';
+      
+      const sevBadge = document.getElementById('slotSeverityBadge');
+      sevBadge.innerText = slot.severity || 'Nominal';
+      sevBadge.className = slot.severity === 'Critical' 
+        ? 'px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 font-mono text-[10px] font-bold border border-rose-500/30'
+        : (slot.severity === 'High' 
+            ? 'px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold border border-amber-500/30'
+            : 'px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold border border-emerald-500/30');
+
+      // At-Risk Accounts List
+      const accountsContainer = document.getElementById('slotAtRiskList');
+      if (accountsContainer) {
+        const accounts = slot.at_risk_accounts || [];
+        document.getElementById('slotAtRiskCount').innerText = `${accounts.length} targeted account${accounts.length === 1 ? '' : 's'}`;
+        
+        if (accounts.length === 0) {
+          accountsContainer.innerHTML = '<div class="text-xs text-slate-500 py-3 text-center">Zero critical account alerts during this window.</div>';
+        } else {
+          accountsContainer.innerHTML = accounts.map(a => `
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3 hover:border-slate-700 transition-all">
+              <div>
+                <div class="font-bold text-white text-xs">${a.company_name}</div>
+                <div class="text-[10px] text-slate-400 font-mono mt-0.5">${a.customer_id} • ${a.tier}</div>
+                <div class="text-[10px] text-amber-300 font-medium mt-1">⚠️ ${a.hourly_trigger}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs font-mono font-bold text-rose-400">$${(a.clv_at_risk || 0).toLocaleString()}</div>
+                <div class="text-[10px] font-bold text-slate-400">${(a.churn_probability * 100).toFixed(1)}% Churn</div>
+                <button onclick="openCustomerModal('${a.customer_id}')" class="mt-1 px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/60 text-blue-300 font-semibold text-[10px] border border-blue-500/30 transition-all">
+                  Inspect 360
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // Render 6x8 Heatmap Grid
+      renderIntraDayHeatmap(data, currentDay, currentHour);
+
+      // Render Timeseries Chart
+      renderIntraDayTimeseriesChart(data, currentDay, currentHour);
+    }
+
+    function renderIntraDayHeatmap(data, activeDay, activeHour) {
+      const grid = document.getElementById('intradayHeatmapGrid');
+      if (!grid) return;
+
+      let html = `
+        <div class="grid grid-cols-9 gap-1 text-[10px] font-mono text-slate-400 font-semibold pb-1 border-b border-slate-800/80">
+          <div class="text-left text-slate-500 font-sans">Operating Day</div>
+          ${OPERATING_HOURS.map(h => `<div class="text-center">${HOUR_LABELS[h].slice(0,5)}</div>`).join('')}
+        </div>
+      `;
+
+      OPERATING_DAYS.forEach(day => {
+        const daySlots = (data.schedule && data.schedule[day]) ? data.schedule[day] : {};
+        const isCurrentDay = day === activeDay;
+
+        html += `
+          <div class="grid grid-cols-9 gap-1 items-center">
+            <div class="text-xs font-bold ${isCurrentDay ? 'text-cyan-300' : 'text-slate-400'} flex items-center gap-1.5">
+              ${isCurrentDay ? '<span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>' : ''}
+              <span>${day.slice(0, 3)}</span>
+            </div>
+            ${OPERATING_HOURS.map(hour => {
+              const s = daySlots[hour] || { churn_risk_index_pct: 12, predicted_revenue: 10000 };
+              const isSelected = day === activeDay && hour === activeHour;
+              const risk = s.churn_risk_index_pct;
+
+              let colorClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30';
+              if (risk > 28) colorClass = 'bg-rose-500/30 text-rose-300 border-rose-500/50 hover:bg-rose-500/40';
+              else if (risk > 20) colorClass = 'bg-amber-500/25 text-amber-300 border-amber-500/40 hover:bg-amber-500/35';
+              else if (risk > 15) colorClass = 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30';
+
+              const activeRing = isSelected ? 'ring-2 ring-cyan-400 ring-offset-1 ring-offset-slate-950 font-black shadow-lg shadow-cyan-500/30 scale-105 z-10' : '';
+
+              return `
+                <button onclick="selectIntraDaySlot('${day}', ${hour})" title="${day} ${HOUR_LABELS[hour]}: ${risk}% Risk, $${s.predicted_revenue.toLocaleString()} Rev" 
+                  class="p-2 rounded-lg text-center border font-mono text-[10px] transition-all transform hover:scale-105 flex flex-col items-center justify-center ${colorClass} ${activeRing}">
+                  <span class="font-bold">${risk.toFixed(1)}%</span>
+                  <span class="text-[8px] opacity-75">$${Math.round(s.predicted_revenue / 1000)}k</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+      });
+
+      grid.innerHTML = html;
+    }
+
+    function renderIntraDayTimeseriesChart(data, activeDay, activeHour) {
+      const ctx = document.getElementById('intradayTimeseriesChart')?.getContext('2d');
+      if (!ctx) return;
+      if (intradayChart) intradayChart.destroy();
+
+      const points = data.timeseries || [];
+      const labels = points.map(p => p.label);
+      const revData = points.map(p => p.predicted_revenue);
+      const riskData = points.map(p => p.churn_risk);
+
+      const activeIdx = points.findIndex(p => p.day === activeDay && p.hour === activeHour);
+
+      intradayChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Hourly Projected Revenue ($)',
+              data: revData,
+              borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6, 182, 212, 0.08)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.35,
+              yAxisID: 'yRev',
+              pointRadius: (ctx) => ctx.dataIndex === activeIdx ? 7 : 2,
+              pointBackgroundColor: (ctx) => ctx.dataIndex === activeIdx ? '#22d3ee' : '#0891b2',
+              pointBorderColor: '#fff',
+              pointBorderWidth: (ctx) => ctx.dataIndex === activeIdx ? 2 : 0
+            },
+            {
+              label: 'Hourly Churn Risk Index (%)',
+              data: riskData,
+              borderColor: '#f43f5e',
+              borderDash: [4, 4],
+              borderWidth: 2,
+              pointRadius: (ctx) => ctx.dataIndex === activeIdx ? 6 : 1,
+              pointBackgroundColor: '#fb7185',
+              tension: 0.35,
+              yAxisID: 'yRisk'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          onClick: (e, elements) => {
+            if (elements.length > 0) {
+              const idx = elements[0].index;
+              const pt = points[idx];
+              if (pt) selectIntraDaySlot(pt.day, pt.hour);
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#94a3b8', font: { size: 10 } }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              borderColor: '#334155',
+              borderWidth: 1,
+              padding: 10,
+              callbacks: {
+                label: (item) => {
+                  if (item.dataset.yAxisID === 'yRev') return `Projected Revenue: $${Number(item.raw).toLocaleString()}`;
+                  return `Churn Risk Index: ${Number(item.raw).toFixed(1)}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,0.04)' },
+              ticks: {
+                color: '#64748b',
+                font: { size: 9 },
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 12
+              }
+            },
+            yRev: {
+              type: 'linear',
+              position: 'left',
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: {
+                color: '#06b6d4',
+                font: { size: 10 },
+                callback: (val) => '$' + (val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val)
+              }
+            },
+            yRisk: {
+              type: 'linear',
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: {
+                color: '#f43f5e',
+                font: { size: 10 },
+                callback: (val) => val.toFixed(0) + '%'
+              },
+              min: 0,
+              max: 60
+            }
+          }
+        }
+      });
+    }
+
+    function selectIntraDaySlot(day, hour) {
+      appState.intraday.selectedDay = day;
+      appState.intraday.selectedHour = Number(hour);
+      renderIntraDayWorkspace();
+    }
+
+    function onIntraDayHourSlider(val) {
+      selectIntraDaySlot(appState.intraday.selectedDay, Number(val));
+    }
+
+    function stepIntraDayHour(delta) {
+      let curHour = appState.intraday.selectedHour + delta;
+      let dayIdx = OPERATING_DAYS.indexOf(appState.intraday.selectedDay);
+
+      if (curHour > 16) {
+        curHour = 9;
+        dayIdx = (dayIdx + 1) % OPERATING_DAYS.length;
+      } else if (curHour < 9) {
+        curHour = 16;
+        dayIdx = (dayIdx - 1 + OPERATING_DAYS.length) % OPERATING_DAYS.length;
+      }
+
+      selectIntraDaySlot(OPERATING_DAYS[dayIdx], curHour);
+    }
+
+    function toggleIntraDayAutoPlay() {
+      appState.intraday.isPlaying = !appState.intraday.isPlaying;
+      const btn = document.getElementById('intradayPlayBtn');
+      const text = document.getElementById('intradayPlayText');
+
+      if (appState.intraday.isPlaying) {
+        text.innerText = 'Pause Simulation';
+        btn.className = 'px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs shadow-md shadow-rose-500/25 flex items-center gap-2 transition-all transform active:scale-95';
+        showToast('Intra-Day Simulation Active', 'Auto-stepping through business hours (Mon-Sat, 9AM-4PM)...', 'info');
+        
+        appState.intraday.playTimer = setInterval(() => {
+          stepIntraDayHour(1);
+        }, 1400);
+      } else {
+        text.innerText = 'Auto-Play Week';
+        btn.className = 'px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs shadow-md shadow-cyan-500/25 flex items-center gap-2 transition-all transform active:scale-95';
+        if (appState.intraday.playTimer) {
+          clearInterval(appState.intraday.playTimer);
+          appState.intraday.playTimer = null;
+        }
+      }
+    }
+
     // Tab Switching
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -2032,13 +2662,17 @@
         activeBtn.className = 'tab-btn active whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 bg-blue-600/20 text-blue-400 border border-blue-500/30 transition-all';
       }
 
-      ['radar', 'customers', 'whatif', 'cohorts', 'theory'].forEach(id => {
+      ['radar', 'customers', 'intraday', 'whatif', 'cohorts', 'theory'].forEach(id => {
         const content = document.getElementById(`tabContent-${id}`);
         if (content) {
           if (id === tabId) content.classList.remove('hidden');
           else content.classList.add('hidden');
         }
       });
+
+      if (tabId === 'intraday') {
+        renderIntraDayWorkspace();
+      }
     }
 
     document.getElementById('globalSearchInput').addEventListener('input', () => {
@@ -2421,6 +3055,31 @@ OmniPulse features 5 automated Next-Best-Action (NBA) intervention playbooks:
    - *Target:* Growth/SMB accounts.
    - *Expected Churn Reduction:* **-16%** | *Cost:* $8`;
         return { reply: reply, type: 'playbooks' };
+      }
+
+      // 10. Intra-Day Temporal Predictions (Mon-Sat, 9AM-4PM)
+      if (q.includes('day to day') || q.includes('hour to hour') || q.includes('hourly') || q.includes('intraday') || q.includes('monday to saturday') || q.includes('9:00') || q.includes('9 am') || q.includes('4:00') || q.includes('4 pm') || q.includes('peak risk')) {
+        const idData = appState.intraday.data || generateClientIntraDaySchedule();
+        const summary = idData.summary || {};
+        const peak = summary.peak_risk_slot || { day: 'Friday', label: 'Fri 04:00 PM', churn_risk: 31.8 };
+        const reply = `### ⏱️ Intra-Day Operational Risk & Revenue Forecaster (Mon–Sat | 09:00 AM – 04:00 PM)
+
+**Operating Window:** Monday to Saturday across 8 business-hour windows (\`09:00 AM\` to \`04:00 PM\`, 48 distinct analytical slots).
+
+#### 📊 Portfolio Temporal Metrics:
+- **Weekly Predicted Business-Hour Revenue:** **$${(summary.total_weekly_predicted_volume || 148000).toLocaleString()}**
+- **Peak Risk Window:** **${peak.day} at ${peak.label}** (\`${peak.churn_risk}%\` Risk Index)
+- **High Concurrency Window:** **Tuesday & Wednesday 11:00 AM – 01:00 PM** (Telemetry peak at 96+ index)
+- **Weekend Risk Vulnerability:** **Saturday 09:00 AM – 04:00 PM** (Skeleton DevOps staffing makes outages 2.1x more likely to trigger immediate executive churn)
+
+#### 🛡️ Day-to-Day Operational Triage Protocol:
+1. **Monday (09:00 AM – 11:00 AM):** Weekend backlog triage. Resolve unresolved P1 escalations before customers reach frustration threshold.
+2. **Tuesday – Thursday (11:00 AM – 02:00 PM):** Peak transaction throughput. Monitor API concurrency and webhook delivery latencies.
+3. **Friday (02:00 PM – 04:00 PM):** Freeze deployments and conduct proactive health checks on top accounts to eliminate weekend renewal cancellations.
+4. **Saturday (09:00 AM – 04:00 PM):** Automated sentinel monitoring; auto-route P1 tickets directly to on-call VP of Engineering.
+
+👉 *Click the **⏱️ Intra-Day Temporal Radar** tab in the top navigation bar to explore the live 6x8 heatmap and scrub hour-by-hour.*`;
+        return { reply: reply, type: 'intraday_forecast' };
       }
 
       // Default Response

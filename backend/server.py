@@ -20,6 +20,7 @@ from backend.models.churn_engine import ChurnIntelligenceEngine
 from backend.models.retention_simulator import RetentionOptimizer, PLAYBOOK_CATALOG
 from backend.models.cohort_engine import CohortEngine
 from backend.models.risk_advisor import RiskAdvisorBot
+from backend.models.intraday_engine import IntraDayPredictiveEngine
 
 app = FastAPI(
     title="OmniPulse CLV & Churn Intelligence Engine",
@@ -42,6 +43,7 @@ STATE = {
     "clv_engine": None,
     "churn_engine": None,
     "cohort_data": None,
+    "intraday_schedule": None,
     "dataset_type": "B2B SaaS (Enterprise)"
 }
 
@@ -58,12 +60,14 @@ def initialize_engine(n_customers=1200, seed=42):
     
     df_final = RetentionOptimizer.assign_playbooks(df_final)
     cohort_matrix = CohortEngine.compute_cohort_matrix(df_t, df_final)
+    intraday_sched = IntraDayPredictiveEngine.generate_schedule(df_final)
     
     STATE["df_customers"] = df_final
     STATE["df_transactions"] = df_t
     STATE["clv_engine"] = clv_eng
     STATE["churn_engine"] = churn_eng
     STATE["cohort_data"] = cohort_matrix
+    STATE["intraday_schedule"] = intraday_sched
     print("[OmniPulse] Engine initialization complete. Ready to serve predictions.")
 
 # Initialize on module load
@@ -276,6 +280,20 @@ def execute_playbook(req: ExecutePlaybookRequest):
 @app.get("/api/cohorts")
 def get_cohorts():
     return STATE["cohort_data"]
+
+@app.get("/api/intraday/schedule")
+def get_intraday_schedule():
+    return STATE["intraday_schedule"]
+
+@app.get("/api/intraday/slot")
+def get_intraday_slot(day: str = Query("Monday"), hour: int = Query(9)):
+    sched = STATE.get("intraday_schedule")
+    if not sched or "schedule" not in sched:
+        raise HTTPException(status_code=503, detail="Intraday engine not yet initialized")
+    day_slots = sched["schedule"].get(day)
+    if not day_slots or hour not in day_slots:
+        raise HTTPException(status_code=400, detail=f"Invalid day '{day}' or hour '{hour}' (Operating days: Mon-Sat, 9AM-4PM)")
+    return day_slots[hour]
 
 @app.post("/api/regenerate-data")
 def regenerate_data(dataset_type: str = Body("B2B SaaS (Enterprise)", embed=True)):
