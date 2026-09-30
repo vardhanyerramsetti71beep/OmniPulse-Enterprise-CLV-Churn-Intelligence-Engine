@@ -288,7 +288,11 @@ def chat_with_risk_advisor(req: ChatRequest):
     return advisor_bot.answer_query(req.message, req.customer_id)
 
 # Serve Frontend static assets
-frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+frontend_dir = os.path.join(base_dir, "public")
+if not os.path.exists(frontend_dir) or not os.path.exists(os.path.join(frontend_dir, "index.html")):
+    frontend_dir = os.path.join(base_dir, "frontend")
+
 if os.path.exists(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
 
@@ -297,8 +301,8 @@ if os.path.exists(frontend_dir):
         index_file = os.path.join(frontend_dir, "index.html")
         if os.path.exists(index_file):
             return FileResponse(index_file)
-        return {"message": "OmniPulse Engine API active. Place index.html in frontend directory."}
+        return {"message": "OmniPulse Engine API active. Ready to serve predictions."}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.server.app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("backend.server:app", host="0.0.0.0", port=8000, reload=True)

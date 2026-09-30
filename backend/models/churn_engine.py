@@ -42,18 +42,19 @@ class ChurnIntelligenceEngine:
             1, 0
         )
         
-        # Train Random Forest Classifier
+        # Train Random Forest Classifier (optimized for rapid serverless response)
         base_rf = RandomForestClassifier(
-            n_estimators=120,
+            n_estimators=50,
             max_depth=6,
             min_samples_split=8,
             random_state=42,
-            class_weight='balanced'
+            class_weight='balanced',
+            n_jobs=-1
         )
         base_rf.fit(X, y)
         
-        # Probability Calibration
-        calibrated = CalibratedClassifierCV(estimator=base_rf, method='sigmoid', cv=3)
+        # Probability Calibration (Platt Sigmoid Scaling)
+        calibrated = CalibratedClassifierCV(estimator=base_rf, method='sigmoid', cv=2)
         calibrated.fit(X, y)
         self.model = calibrated
         

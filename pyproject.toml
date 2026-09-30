@@ -1,0 +1,18 @@
+[project]
+name = "omnipulse-clv-engine"
+version = "2.4.0"
+description = "OmniPulse Enterprise CLV & Churn Intelligence Engine"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "pydantic>=2.5.0",
+    "pandas>=2.1.0",
+    "numpy>=1.26.0",
+    "scikit-learn>=1.4.0",
+    "scipy>=1.11.0"
+]
+
+[tool.vercel]
+entrypoint = "backend.server:app"

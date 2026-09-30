@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>OmniPulse | Enterprise CLV & Churn Intelligence Engine</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+              blue: '#3b82f6',
+              cyan: '#06b6d4',
+              purple: '#8b5cf6',
+              rose: '#f43f5e',
+              amber: '#f59e0b'
+            },
+            surface: {
+              dark: '#080c14',
+              card: '#0f172a',
+              border: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js for high-fidelity interactive visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    
+    * {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* Sleek scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .glass-card-hover {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card-hover:hover {
+      border-color: rgba(96, 165, 250, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.6), 0 0 20px -3px rgba(59, 130, 246, 0.18);
+    }
+
+    /* Range slider custom styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: #1e293b;
+      border-radius: 9999px;
+      height: 6px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
+      transition: all 0.15s ease;
+    }
+    input[type=range]::-moz-range-thumb {
+      appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
+      transition: all 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover,
+    input[type=range]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      background: #60a5fa;
+    }
+
+    /* Math formula boxes */
+    .math-block {
+      background: rgba(10, 15, 26, 0.95);
+      border-left: 3px solid #3b82f6;
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #93c5fd;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body class="bg-[#070a12] text-slate-100 min-h-screen antialiased flex flex-col selection:bg-blue-600 selection:text-white">
+
+  <!-- Ambient Glow Effects -->
+  <div class="fixed top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-10 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
+
+  <!-- Top Executive Navigation Bar -->
+  <header class="sticky top-0 z-40 w-full glass-card border-b border-slate-800/80 px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/25 font-black text-xl text-white">
+          <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+              OmniPulse <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold uppercase tracking-wider">Enterprise Intelligence Engine</span>
+            </h1>
+          </div>
+          <p class="text-xs text-slate-400">Probabilistic BG/NBD Lifetime Value Modeling & Calibrated Churn Mitigation Platform</p>
+        </div>
+      </div>
+
+      <div class="hidden xl:flex items-center gap-2 ml-4 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800 text-xs text-slate-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-medium text-slate-200" id="liveStatusBadge">1,200 Accounts Scored • Inference Active</span>
+      </div>
+    </div>
+
+    <!-- Actions & Global Controls -->
+    <div class="flex items-center gap-3">
+      <!-- Search Input -->
+      <div class="relative hidden lg:block w-64">
+        <input type="text" id="globalSearchInput" placeholder="Search customer, domain... (/)" 
+          class="w-full bg-slate-900 text-xs text-slate-200 pl-8 pr-3 py-2 rounded-lg border border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-500">
+        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
+      <!-- Dataset Selector -->
+      <select id="datasetSelector" class="bg-slate-900 border border-slate-700 text-xs text-slate-200 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500">
+        <option value="B2B SaaS (Enterprise)">Domain: B2B Enterprise SaaS</option>
+        <option value="E-Commerce D2C Retail">Domain: High-Velocity E-Commerce</option>
+      </select>
+
+      <!-- What-If CTA -->
+      <button onclick="switchTab('whatif')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-md shadow-blue-600/30 transition-all transform active:scale-95">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span>What-If Lab</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 space-y-6">
+
+    <!-- KPI Pulse Banner (6 High-Density Metrics) -->
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="kpiGrid">
+      <!-- Card 1: Total Predicted CLV -->
+      <div class="glass-card glass-card-hover rounded-xl p-4 relative overflow-hidden">
+        <div class="flex items-center justify-between text-slate-400 mb-1">
+          <span class="text-xs font-medium">Predicted CLV (12m)</span>
+          <span class="p-1 rounded bg-blue-500/10 text-blue-400 text-xs font-mono">BG/NBD</span>
+        </div>
+        <div class="text-xl lg:text-2xl font-extrabold text-white tracking-tight" id="kpiTotalCLV">$45.73M</div>
+        <div class="flex items-center gap-1.5 mt-2 text-[11px] text-emerald-400">
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+          <span class="font-semibold">+14.2%</span> <span class="text-slate-400">YoY expansion</span>
+        </div>
+        <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/10 rounded-full blur-xl pointer-events-none"></div>
+      </div>
+
+      <!-- Card 2: Revenue at Risk -->
+      <div class="glass-card glass-card-hover rounded-xl p-4 relative overflow-hidden border-rose-500/20">
+        <div class="flex items-center justify-between text-slate-400 mb-1">
+          <span class="text-xs font-medium text-rose-300">Revenue at Risk</span>
+          <span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 text-[10px] font-bold animate-pulse">ALERT</span>
+        </div>
+        <div class="text-xl lg:text-2xl font-extrabold text-rose-400 tracking-tight" id="kpiRevenueAtRisk">$3.29M</div>
+        <div class="flex items-center gap-1.5 mt-2 text-[11px] text-rose-300">
+          <span class="font-semibold" id="kpiRiskPct">7.2%</span> <span class="text-slate-400">of portfolio equity</span>
+        </div>
+        <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-rose-500/15 rounded-full blur-xl pointer-events-none"></div>
+      </div>
+
+      <!-- Card 3: Avg Churn Probability -->
+      <div class="glass-card glass-card-hover rounded-xl p-4 relative overflow-hidden">
+        <div class="flex items-center justify-between text-slate-400 mb-1">
+          <span class="text-xs font-medium">Avg Churn Risk</span>
+          <span class="p-1 rounded bg-amber-500/10 text-amber-400 text-xs font-mono">Calibrated</span>
+        </div>
+        <div class="text-xl lg:text-2xl font-extrabold text-white tracking-tight" id="kpiAvgChurn">7.0%</div>
+        <div class="flex items-center gap-1.5 mt-2 text-[11px] text-amber-400">
+          <svg class="w-3 h-3 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+          <span class="font-semibold">73 Critical</span> <span class="text-slate-400">accounts tagged</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Net Retention Rate (NRR) -->
+      <div class="glass-card glass-card-hover rounded-xl p-4 relative overflow-hidden">
+        <div class="flex items-center justify-between text-slate-400 mb-1">
+          <span class="text-xs font-medium">Net Retention (NRR)</span>
+          <span class="p-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-mono">ARR</span>
+        </div>
+        <div class="text-xl lg:text-2xl font-extrabold text-emerald-400 tracking-tight" id="kpiNRR">114.5%</div>
+        <div class="flex items-center gap-1.5 mt-2 text-[11px] text-slate-400">
+          <span class="text-emerald-400 font-semibold">+14.5%</span> net cohort expansion
+        </div>
+      </div>
+
+      <!-- Card 5: Top 20% Value Share -->
+      <div class="glass-card glass-card-hover rounded-xl p-4 relative overflow-hidden">
+        <div class="flex items-center justify-between text-slate-400 mb-1">
+          <span class="text-xs font-medium">Top 20% Pareto</span>
+          <span class="p-1 rounded bg-purple-500/10 text-purple-400 text-xs font-mono">Equity</span>
+        </div>
+        <div class="text-xl lg:text-2xl font-extrabold text-purple-300 tracking-tight" id="kpiPareto">45.5%</div>
+        <div class="flex items-center gap-1.5 mt-2 text-[11px] text-slate-400">
+          Key Account Concentration
+        </div>
+      </div>
+
+      <!-- Card 6: Model Accuracy (ROC-AUC) -->
+      <div class="glass-card glass-card-hover rounded-xl p-4 relative overflow-hidden">
+        <div class="flex items-center justify-between text-slate-400 mb-1">
+          <span class="text-xs font-medium">ML Reliability</span>
+          <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">PLATT</span>
+        </div>
+        <div class="text-xl lg:text-2xl font-extrabold text-white tracking-tight" id="kpiModelAUC">0.999</div>
+        <div class="flex items-center gap-1.5 mt-2 text-[11px] text-slate-400">
+          <span>ROC-AUC</span> • <span class="text-slate-300 font-mono" id="kpiF1">F1: 0.946</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto">
+      <button onclick="switchTab('radar')" id="tabBtn-radar" class="tab-btn active whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 bg-blue-600/20 text-blue-400 border border-blue-500/30 transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+        <span>Strategic Radar & Value Quadrants</span>
+      </button>
+
+      <button onclick="switchTab('customers')" id="tabBtn-customers" class="tab-btn whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <span>Customer 360 & Early Warning Table</span>
+      </button>
+
+      <button onclick="switchTab('whatif')" id="tabBtn-whatif" class="tab-btn whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        <span>Causal Uplift & What-If ROI Lab</span>
+      </button>
+
+      <button onclick="switchTab('cohorts')" id="tabBtn-cohorts" class="tab-btn whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+        <span>Cohort Retention & Survival Analysis</span>
+      </button>
+
+      <button onclick="switchTab('theory')" id="tabBtn-theory" class="tab-btn whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <span>📐 Mathematical Foundations & Whitepaper</span>
+      </button>
+    </nav>
+
+    <!-- TAB 1: Strategic Radar & Value Quadrants -->
+    <div id="tabContent-radar" class="space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Scatter Chart: CLV vs Churn Risk Matrix -->
+        <div class="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <span>CLV vs. Churn Likelihood Strategic Matrix</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-normal">Click any dot to inspect Customer 360</span>
+              </h2>
+              <p class="text-xs text-slate-400">Quadrant mapping separating Whale Accounts at Risk from Secure Champions.</p>
+            </div>
+            <div class="flex items-center gap-3 text-xs">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Champions</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Critical Whales</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> High Risk</span>
+            </div>
+          </div>
+
+          <div class="h-80 w-full relative">
+            <canvas id="quadrantScatterChart"></canvas>
+          </div>
+
+          <div class="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-800 text-center text-xs">
+            <div class="p-2 rounded-lg bg-emerald-950/20 border border-emerald-500/20">
+              <div class="text-emerald-400 font-bold">Top-Left: Champions</div>
+              <div class="text-[11px] text-slate-400">High CLV, Low Churn</div>
+            </div>
+            <div class="p-2 rounded-lg bg-rose-950/30 border border-rose-500/30">
+              <div class="text-rose-400 font-bold">Top-Right: Critical At-Risk</div>
+              <div class="text-[11px] text-slate-400">High CLV, High Churn (Target!)</div>
+            </div>
+            <div class="p-2 rounded-lg bg-blue-950/20 border border-blue-500/20">
+              <div class="text-blue-400 font-bold">Bottom-Left: Stable Core</div>
+              <div class="text-[11px] text-slate-400">Mid CLV, Low Churn</div>
+            </div>
+            <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+              <div class="text-slate-400 font-bold">Bottom-Right: Hibernating</div>
+              <div class="text-[11px] text-slate-500">Low CLV, High Churn</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Global Churn Drivers (Explainability) & Segment Donut -->
+        <div class="space-y-6">
+          <!-- Explainable AI Drivers -->
+          <div class="glass-card rounded-2xl p-5 border border-slate-800">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Global Churn Drivers (SHAP)</span>
+              </h3>
+              <span class="text-[11px] text-slate-400 font-mono">Attribution</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Primary feature importance weights explaining risk emergence.</p>
+            <div class="space-y-2.5" id="driversList">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Customer Equity by Segment -->
+          <div class="glass-card rounded-2xl p-5 border border-slate-800">
+            <h3 class="text-sm font-bold text-white mb-2">Customer Equity by Segment</h3>
+            <div class="h-44 relative">
+              <canvas id="segmentDonutChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Customer 360 & Early Warning Table -->
+    <div id="tabContent-customers" class="hidden space-y-4">
+      <div class="glass-card rounded-2xl p-5 border border-slate-800">
+        <!-- Filter Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span class="text-xs text-slate-400 font-medium">Risk Filter:</span>
+            <button onclick="setFilterRisk('All')" class="filter-risk-btn active px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-600 text-white transition-all">All</button>
+            <button onclick="setFilterRisk('Critical')" class="filter-risk-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-rose-400 hover:bg-slate-700 transition-all">Critical</button>
+            <button onclick="setFilterRisk('High')" class="filter-risk-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-amber-400 hover:bg-slate-700 transition-all">High</button>
+            <button onclick="setFilterRisk('Medium')" class="filter-risk-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-blue-400 hover:bg-slate-700 transition-all">Medium</button>
+            <button onclick="setFilterRisk('Low')" class="filter-risk-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-emerald-400 hover:bg-slate-700 transition-all">Low</button>
+
+            <span class="text-xs text-slate-400 font-medium ml-3">Tier:</span>
+            <select id="filterTier" onchange="renderCustomerTable()" class="bg-slate-800 border border-slate-700 text-xs text-slate-200 px-2 py-1 rounded-md">
+              <option value="All">All Tiers</option>
+              <option value="Enterprise">Enterprise</option>
+              <option value="Mid-Market">Mid-Market</option>
+              <option value="Growth / Scaleup">Growth / Scaleup</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">Sort by:</span>
+            <select id="tableSortBy" onchange="renderCustomerTable()" class="bg-slate-800 border border-slate-700 text-xs text-slate-200 px-2.5 py-1 rounded-md">
+              <option value="clv_at_risk">Revenue at Risk (High -> Low)</option>
+              <option value="predicted_clv_12m">Predicted CLV (High -> Low)</option>
+              <option value="churn_probability">Churn Probability (High -> Low)</option>
+              <option value="monthly_contract_value">Monthly Contract Value</option>
+            </select>
+
+            <button onclick="exportCSV()" class="px-3 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 flex items-center gap-1.5 transition-all">
+              <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800/80">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-900/90 text-slate-400 font-semibold uppercase tracking-wider text-[11px] border-b border-slate-800">
+                <th class="py-3 px-4">Account / Contact</th>
+                <th class="py-3 px-3">Tier & Industry</th>
+                <th class="py-3 px-3 text-right">Predicted 12m CLV</th>
+                <th class="py-3 px-4">Churn Probability</th>
+                <th class="py-3 px-3 text-right">Revenue at Risk</th>
+                <th class="py-3 px-3 text-center">Telemetry Velocity</th>
+                <th class="py-3 px-3 text-center">Tickets (P1)</th>
+                <th class="py-3 px-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody" class="divide-y divide-slate-800/60 font-medium">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="flex items-center justify-between pt-4 text-xs text-slate-400">
+          <div id="tableRecordCount">Showing 1 to 15 of 1,200 accounts</div>
+          <div class="flex items-center gap-2">
+            <button onclick="prevTablePage()" id="prevPageBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed">Previous</button>
+            <span id="pageIndicator" class="font-mono text-slate-200 font-bold px-2">Page 1 of 80</span>
+            <button onclick="nextTablePage()" id="nextPageBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Causal Uplift & What-If Scenario Lab -->
+    <div id="tabContent-whatif" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Interactive Sliders & Controls (5 Cols) -->
+        <div class="lg:col-span-5 glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
+          <div class="border-b border-slate-800 pb-4">
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+              <span>Retention Intervention Parameters</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Simulate budget allocation, pricing concessions, and targeting criteria to calculate incremental financial uplift.</p>
+          </div>
+
+          <!-- Target Cohorts -->
+          <div class="space-y-2">
+            <label class="text-xs font-semibold text-slate-300">Target Risk Cohorts:</label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="flex items-center gap-2 p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs cursor-pointer hover:border-slate-700">
+                <input type="checkbox" id="simRiskCritical" checked onchange="runWhatIfSimulation()" class="rounded text-rose-500 focus:ring-0 bg-slate-800">
+                <span class="text-rose-400 font-semibold">Critical</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs cursor-pointer hover:border-slate-700">
+                <input type="checkbox" id="simRiskHigh" checked onchange="runWhatIfSimulation()" class="rounded text-amber-500 focus:ring-0 bg-slate-800">
+                <span class="text-amber-400 font-semibold">High</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs cursor-pointer hover:border-slate-700">
+                <input type="checkbox" id="simRiskMedium" onchange="runWhatIfSimulation()" class="rounded text-blue-500 focus:ring-0 bg-slate-800">
+                <span class="text-blue-400 font-semibold">Medium</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Slider 1: Budget -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-300 font-semibold">Retention Campaign Budget:</span>
+              <span class="font-mono text-blue-400 font-bold text-sm" id="budgetDisplay">$65,000</span>
+            </div>
+            <input type="range" id="simBudgetInput" min="10000" max="250000" step="5000" value="65000" oninput="updateBudgetSlider(this.value)" class="w-full">
+            <div class="flex justify-between text-[10px] text-slate-500">
+              <span>$10k (Lean)</span>
+              <span>$125k (Standard)</span>
+              <span>$250k (Aggressive)</span>
+            </div>
+          </div>
+
+          <!-- Slider 2: Discount Incentive -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-300 font-semibold">Renewal Concession / Incentive:</span>
+              <span class="font-mono text-purple-400 font-bold text-sm" id="incentiveDisplay">12%</span>
+            </div>
+            <input type="range" id="simIncentiveInput" min="0" max="25" step="1" value="12" oninput="updateIncentiveSlider(this.value)" class="w-full">
+            <div class="flex justify-between text-[10px] text-slate-500">
+              <span>0% (White Glove Advisory)</span>
+              <span>12% (Balanced)</span>
+              <span>25% (Maximum)</span>
+            </div>
+          </div>
+
+          <!-- Execution Intensity -->
+          <div class="space-y-2">
+            <label class="text-xs font-semibold text-slate-300">Intervention Touchpoint Intensity:</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="setIntensity(0.75)" id="btnIntensity-075" class="intensity-btn py-2 text-xs font-semibold rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700">Conservative</button>
+              <button onclick="setIntensity(1.0)" id="btnIntensity-10" class="intensity-btn active py-2 text-xs font-semibold rounded-lg bg-blue-600/20 border border-blue-500 text-blue-300">Balanced</button>
+              <button onclick="setIntensity(1.35)" id="btnIntensity-135" class="intensity-btn py-2 text-xs font-semibold rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700">High-Impact</button>
+            </div>
+          </div>
+
+          <!-- Trigger Button -->
+          <button onclick="triggerSimulateAnim()" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Simulate Portfolio Uplift</span>
+          </button>
+        </div>
+
+        <!-- Right: Dynamic Uplift Results & Waterfall (7 Cols) -->
+        <div class="lg:col-span-7 glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <h3 class="text-base font-bold text-white">Projected Financial Impact & ROI Uplift</h3>
+              <p class="text-xs text-slate-400">Algorithmic simulation grounded in historical elasticity and response rates.</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold font-mono" id="simROIBadge">5.4x ROI</span>
+          </div>
+
+          <!-- 4 Score Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <div class="text-[11px] text-slate-400 font-medium">Targeted Accounts</div>
+              <div class="text-xl font-black text-white font-mono mt-1" id="simTargetCount">142</div>
+              <div class="text-[10px] text-slate-500 mt-1">Priority Selection</div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <div class="text-[11px] text-slate-400 font-medium">Saved CLV Equity</div>
+              <div class="text-xl font-black text-emerald-400 font-mono mt-1" id="simSavedEquity">$354,200</div>
+              <div class="text-[10px] text-emerald-400/80 mt-1">Protected ARR</div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <div class="text-[11px] text-slate-400 font-medium">Campaign Cost</div>
+              <div class="text-xl font-black text-slate-300 font-mono mt-1" id="simTotalCost">$64,800</div>
+              <div class="text-[10px] text-slate-500 mt-1">Intervention Spend</div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-900/90 border border-emerald-500/30 bg-emerald-950/10">
+              <div class="text-[11px] text-emerald-300 font-medium">Net Profit Uplift</div>
+              <div class="text-xl font-black text-emerald-400 font-mono mt-1" id="simNetProfit">+$289,400</div>
+              <div class="text-[10px] text-emerald-400 font-semibold mt-1">Net Gain (EBITDA)</div>
+            </div>
+          </div>
+
+          <!-- Churn Reduction Trajectory -->
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-300 font-semibold">Population Churn Rate Trajectory:</span>
+              <span class="text-xs font-mono font-bold text-emerald-400" id="churnDeltaText">7.0% -> 4.8% (-2.2% absolute)</span>
+            </div>
+            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden flex">
+              <div id="churnBarAfter" style="width: 4.8%" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-700"></div>
+              <div id="churnBarDiff" style="width: 2.2%" class="bg-gradient-to-r from-rose-500 to-amber-500 h-full opacity-40 transition-all duration-700"></div>
+            </div>
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span>Optimized Post-Campaign Churn</span>
+              <span>Saved Risk Population</span>
+            </div>
+          </div>
+
+          <!-- Chart: Financial Uplift Waterfall -->
+          <div class="h-56 relative">
+            <canvas id="whatIfWaterfallChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: Cohort Retention & Survival Analysis Engine -->
+    <div id="tabContent-cohorts" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              <span>Cohort Retention Decay Heatmap</span>
+            </h2>
+            <p class="text-xs text-slate-400">Track longitudinal retention curves across customer vintage cohorts from Month 0 to Month 11.</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-slate-400">Legend:</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">&gt; 80%</span>
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 font-mono">55 - 80%</span>
+            <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 font-mono">&lt; 55%</span>
+          </div>
+        </div>
+
+        <!-- Heatmap Table -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="w-full text-center border-collapse text-xs font-mono">
+            <thead>
+              <tr class="bg-slate-900 text-slate-400 border-b border-slate-800 text-[11px]">
+                <th class="py-2.5 px-3 text-left">Cohort</th>
+                <th class="py-2.5 px-3">Size</th>
+                <th class="py-2.5 px-2">M0</th>
+                <th class="py-2.5 px-2">M1</th>
+                <th class="py-2.5 px-2">M2</th>
+                <th class="py-2.5 px-2">M3</th>
+                <th class="py-2.5 px-2">M4</th>
+                <th class="py-2.5 px-2">M5</th>
+                <th class="py-2.5 px-2">M6</th>
+                <th class="py-2.5 px-2">M7</th>
+                <th class="py-2.5 px-2">M8</th>
+                <th class="py-2.5 px-2">M9</th>
+                <th class="py-2.5 px-2">M10</th>
+                <th class="py-2.5 px-2">M11</th>
+              </tr>
+            </thead>
+            <tbody id="cohortTableBody" class="divide-y divide-slate-800/60 font-semibold">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Kaplan-Meier Survival Curves & Hazard Rate -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 flex items-center justify-between">
+              <span>Kaplan-Meier Survival Function S(t)</span>
+              <span class="text-[10px] text-blue-400 font-mono">High vs Low Feature Depth</span>
+            </h3>
+            <div class="h-56 relative">
+              <canvas id="kaplanMeierChart"></canvas>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 flex items-center justify-between">
+              <span>Customer Empirical Hazard Rate h(t)</span>
+              <span class="text-[10px] text-amber-400 font-mono">Renewal Cliffs</span>
+            </h3>
+            <div class="h-56 relative">
+              <canvas id="hazardRateChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: Mathematical Foundations & Whitepaper -->
+    <div id="tabContent-theory" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-8">
+        <div>
+          <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <span>Mathematical Foundations & Architectural Whitepaper</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Exhaustive mathematical formulation and algorithmic derivation of the OmniPulse CLV & Churn platform.</p>
+        </div>
+
+        <!-- Section 1: The BG/NBD Model -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span>1. Probabilistic Transaction Modeling: BG/NBD (Fader, Hardie & Lee)</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            In non-contractual and hybrid SaaS environments, customers do not explicitly announce their cancellation; they simply become inactive. The Beta-Geometric / Negative Binomial Distribution (BG/NBD) model solves this through a compound latent process:
+          </p>
+          <ul class="text-xs text-slate-400 list-disc pl-5 space-y-1">
+            <li><strong>Transaction Process:</strong> While active, each customer makes purchases according to a Poisson process with transaction rate \(\lambda\). Across customers, \(\lambda\) is heterogeneous and follows a Gamma distribution with shape \(r\) and scale \(\alpha\):
+              <div class="math-block mt-1">f(\lambda | r, \alpha) = \frac{\alpha^r \lambda^{r-1} e^{-\alpha \lambda}}{\Gamma(r)}</div>
+            </li>
+            <li><strong>Dropout Process:</strong> After each transaction, a customer may become inactive with unobserved probability \(p\). Across the population, \(p\) follows a Beta distribution with parameters \(a\) and \(b\):
+              <div class="math-block mt-1">f(p | a, b) = \frac{p^{a-1} (1-p)^{b-1}}{B(a, b)}</div>
+            </li>
+            <li><strong>Conditional Expectation \(E[Y(t)|x, t_x, T]\):</strong> The expected number of future transactions in interval \((T, T+t]\) given observed history (frequency \(x\), recency \(t_x\), customer tenure \(T\)) is:
+              <div class="math-block mt-1">E[Y(t) | r, \alpha, a, b, x, t_x, T] = \frac{a + b + x - 1}{a - 1} \cdot \left[ 1 - \left(\frac{\alpha + T}{\alpha + T + t}\right)^{r+x} {}_2F_1\left(r+x, b; a+b+x-1; \frac{t}{\alpha + T + t}\right) \right] \cdot P(\text{Alive})</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section 2: Gamma-Gamma Monetary Submodel -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>2. Monetary Value Submodel: Gamma-Gamma with Bayesian Shrinkage</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            To decouple purchase frequency from order value, the Gamma-Gamma model assumes customer monetary value per transaction \(m_i\) follows a Gamma distribution with shape \(p\) and scale \(\nu_i\). The individual parameter \(\nu_i\) itself varies across the population according to a Gamma prior \(\text{Gamma}(q, \gamma)\).
+          </p>
+          <div class="math-block">
+            E[M | p, q, \gamma, x, \bar{m}_x] = \left(\frac{q - 1}{p x + q - 1}\right) \frac{\gamma p}{q - 1} + \left(\frac{p x}{p x + q - 1}\right) \bar{m}_x
+          </div>
+          <p class="text-xs text-slate-400">
+            This creates an optimal Bayesian shrinkage estimator: for customers with few transactions (\(x \to 0\)), their expected spend shrinks toward the population mean prior. For high-frequency customers (\(x \gg 1\)), their individual observed average \(\bar{m}_x\) dominates.
+          </p>
+        </div>
+
+        <!-- Section 3: Discounted Cash Flow CLV -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            <span>3. Continuous Discounted Customer Equity</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Combining the BG/NBD transaction expectation and Gamma-Gamma expected spend over planning horizon \(H\) (typically 12 or 24 months) discounted at rate \(d\) with gross margin \(m\):
+          </p>
+          <div class="math-block">
+            \text{CLV}_H = \sum_{t=1}^{H} \frac{E[Y(t) - Y(t-1) | x, t_x, T] \cdot E[M] \cdot \text{Gross Margin}}{(1 + d)^t}
+          </div>
+        </div>
+
+        <!-- Section 4: Supervised Churn & Causal Uplift -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span>4. Causal ML & Uplift Modeling vs Standard Churn Scoring</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Standard churn models predict \(P(\text{Churn} = 1 | X)\). However, optimizing retention spend requires answering a <strong>counterfactual causal question</strong>: What is the incremental uplift of an intervention \(T \in \{0, 1\}\)?
+          </p>
+          <div class="math-block">
+            \tau(X) = E[Y | X, T=1] - E[Y | X, T=0]
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs pt-2">
+            <div class="p-3 rounded-lg bg-emerald-950/20 border border-emerald-500/30">
+              <div class="font-bold text-emerald-400">1. Persuadables</div>
+              <div class="text-[11px] text-slate-400 mt-1">Churn if untreated (\(Y_0=1\)), Retain if treated (\(Y_1=0\)). <strong>All retention budget must target this segment!</strong></div>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+              <div class="font-bold text-slate-300">2. Sure Things</div>
+              <div class="text-[11px] text-slate-400 mt-1">Retain regardless (\(Y_0=0, Y_1=0\)). Budget spent here is 100% wasted margin dilution.</div>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+              <div class="font-bold text-slate-300">3. Lost Causes</div>
+              <div class="text-[11px] text-slate-400 mt-1">Churn regardless (\(Y_0=1, Y_1=1\)). Expensive white-glove efforts will not change outcome.</div>
+            </div>
+            <div class="p-3 rounded-lg bg-rose-950/20 border border-rose-500/30">
+              <div class="font-bold text-rose-400">4. Sleeping Dogs</div>
+              <div class="text-[11px] text-slate-400 mt-1">Retain if left alone (\(Y_0=0\)), but contact prompts cancellation (\(Y_1=1\))! Never disturb.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Explainable AI with SHAP -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span>5. Shapley Additive Explanations (SHAP) Attribution</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            To ensure zero black-box opacity for executive customer success teams, every individual churn probability is decomposed using Shapley values rooted in cooperative game theory:
+          </p>
+          <div class="math-block">
+            \phi_i(v) = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!(|N| - |S| - 1)!}{|N|!} \left[ v(S \cup \{i\}) - v(S) \right]
+          </div>
+          <p class="text-xs text-slate-400">
+            This proves mathematically that the sum of local feature attributions exactly equals the difference between the customer's predicted risk and the baseline expected population risk: \(f(x) = \phi_0 + \sum_{i=1}^M \phi_i\).
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CUSTOMER 360 MODAL / DOSSIER -->
+  <div id="customerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+    <div class="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto glass-card rounded-2xl border border-slate-700 p-6 shadow-2xl space-y-6">
+      <!-- Close button -->
+      <button onclick="closeCustomerModal()" class="absolute top-5 right-5 p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- Customer Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-extrabold text-white" id="modalCompanyName">Synthetix Technologies</h2>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono" id="modalRiskBadge">Critical Risk (78.4%)</span>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30" id="modalTierBadge">Enterprise Tier</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs text-slate-400">
+            <span id="modalCustId" class="font-mono text-slate-300">CUST-0104</span> •
+            <span id="modalContactName">Elena Chen (VP Tech)</span> •
+            <span id="modalEmail" class="text-blue-400">elena@synthetix.io</span> •
+            <span id="modalIndustry">AI & Cloud Infrastructure</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Quick Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-medium">Predicted 12m CLV</div>
+          <div class="text-lg font-bold text-white font-mono mt-0.5" id="modalCLV">$142,500</div>
+          <div class="text-[10px] text-slate-500">Discounted Cash Flow</div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-medium">Monthly Contract (MRR)</div>
+          <div class="text-lg font-bold text-white font-mono mt-0.5" id="modalMRR">$12,400</div>
+          <div class="text-[10px] text-slate-500" id="modalTenure">Tenure: 18 months</div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-medium">Telemetry Trend</div>
+          <div class="text-lg font-bold font-mono mt-0.5" id="modalVelocity">-34.2%</div>
+          <div class="text-[10px] text-slate-500" id="modalLastLogin">Last login: 22d ago</div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-medium">Support & CSAT</div>
+          <div class="text-lg font-bold text-white font-mono mt-0.5" id="modalCSAT">2.8 / 5.0</div>
+          <div class="text-[10px] text-rose-400 font-medium" id="modalP1Tickets">1 Critical P1 Outage</div>
+        </div>
+      </div>
+
+      <!-- Middle: Health Radar & Explainability Drivers -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Radar Polygon -->
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Customer Health Dimensional Radar</h4>
+          <div class="h-56 relative flex items-center justify-center">
+            <canvas id="customerRadarCanvas" width="280" height="220"></canvas>
+          </div>
+        </div>
+
+        <!-- Explainable AI Drivers -->
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
+            <span>Machine Learning Risk Factors (SHAP)</span>
+            <span class="text-[10px] text-slate-500 font-mono">Attribution</span>
+          </h4>
+          <div class="space-y-2 text-xs" id="modalFactorsList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Hero: Next-Best-Action (NBA) Playbook Card -->
+      <div class="p-5 rounded-2xl bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-purple-950/40 border border-blue-500/30 space-y-4 relative overflow-hidden">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-blue-500 text-white text-[10px] font-black uppercase tracking-wider">AI Recommended Next-Best-Action</span>
+              <span class="text-xs text-blue-300 font-mono" id="modalPlaybookChannel">White-Glove / In-Person</span>
+            </div>
+            <h3 class="text-base font-bold text-white mt-1" id="modalPlaybookTitle">Executive Sponsor & High-Touch CSM Intervention</h3>
+            <p class="text-xs text-slate-300 mt-1 max-w-xl" id="modalPlaybookDesc">Deploy VP of Customer Success + Solutions Architect for emergency 1-on-1 alignment, roadmap preview, and SLA escalation resolution.</p>
+          </div>
+
+          <div class="text-right">
+            <div class="text-[11px] text-slate-400">Expected Churn Reduction</div>
+            <div class="text-xl font-black text-emerald-400 font-mono" id="modalPlaybookReduction">-46%</div>
+            <div class="text-[10px] text-slate-400" id="modalPlaybookROI">Cost: $450 • Saved: $28,400</div>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-white/10 flex items-center justify-between">
+          <div class="text-xs text-slate-400" id="modalPlaybookStatus">Ready for immediate automated dispatch.</div>
+          <button id="modalExecuteBtn" onclick="executeCurrentPlaybook()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all transform active:scale-95">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>🚀 Execute Retention Playbook</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating AI Risk Advisor Chatbot Trigger Button -->
+  <button id="chatbotTriggerBtn" onclick="toggleChatbot()" class="fixed bottom-6 right-6 z-40 px-4 py-2.5 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs shadow-2xl shadow-blue-500/40 flex items-center gap-2.5 transition-all transform hover:scale-105 active:scale-95 border border-white/20">
+    <span class="relative flex h-2.5 w-2.5">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+    </span>
+    <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+    </svg>
+    <span>PulseAI Risk Copilot</span>
+  </button>
+
+  <!-- Floating Chatbot Window -->
+  <div id="chatbotWindow" class="fixed bottom-20 right-6 z-50 w-96 sm:w-[420px] h-[560px] max-h-[82vh] glass-card rounded-2xl border border-blue-500/40 shadow-2xl flex flex-col overflow-hidden hidden opacity-0 transition-all duration-300 transform scale-95 origin-bottom-right">
+    <!-- Chat Header -->
+    <div class="px-4 py-3 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20 text-sm">
+          🤖
+        </div>
+        <div>
+          <div class="text-xs font-bold text-white flex items-center gap-1.5">
+            <span>PulseAI Risk Advisor</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          </div>
+          <div class="text-[10px] text-slate-400">Interactive Customer Risk & CLV Copilot</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1">
+        <button onclick="clearChatHistory()" title="Clear Chat" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+        <button onclick="toggleChatbot()" title="Close Copilot" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Messages Scroll Area -->
+    <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs text-slate-200">
+      <!-- Initial Message -->
+      <div class="flex items-start gap-2.5">
+        <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 mt-0.5">AI</div>
+        <div class="p-3 rounded-2xl rounded-tl-none bg-slate-900 border border-slate-800 text-slate-200 space-y-1.5 shadow-sm max-w-[85%]">
+          <p class="font-semibold text-white">👋 Hello! I am your AI Risk Management Copilot.</p>
+          <p class="text-slate-300 text-[11px] leading-relaxed">I can explain customer churn likelihood, audit specific accounts, break down SHAP factors, and recommend Next-Best-Action retention playbooks.</p>
+          <p class="text-[10px] text-blue-400 font-medium">Click any chip below or ask me a question:</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Prompt Chips with Emergency Hotline -->
+    <div class="px-3 py-2 bg-slate-950/80 border-t border-slate-800/80 overflow-x-auto flex items-center gap-1.5 text-[10px] whitespace-nowrap">
+      <button onclick="runQuickPrompt('EMERGENCY: Customer is threatening to cancel today!')" class="px-2.5 py-1 rounded-full bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-500/50 flex items-center gap-1 font-bold animate-pulse">🚨 Cancellation Threat!</button>
+      <button onclick="runQuickPrompt('Customer facing budget cuts and wants to downsize')" class="px-2.5 py-1 rounded-full bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 border border-amber-500/40 flex items-center gap-1 font-semibold">📉 Budget Cuts</button>
+      <button onclick="runQuickPrompt('Competitor is offering 30% lower price to poach account')" class="px-2.5 py-1 rounded-full bg-purple-950/40 hover:bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center gap-1 font-semibold">🛑 Competitor Threat</button>
+      <button onclick="runQuickPrompt('Audit CUST-0104 (Synthetix Technologies)')" class="px-2.5 py-1 rounded-full bg-slate-900 hover:bg-slate-800 text-blue-300 border border-blue-500/30">🔍 Audit CUST-0104</button>
+      <button onclick="runQuickPrompt('Who are the top accounts at risk?')" class="px-2.5 py-1 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700">⚠️ Top At-Risk</button>
+      <button onclick="runQuickPrompt('Portfolio Risk Summary')" class="px-2.5 py-1 rounded-full bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30">📊 Portfolio Health</button>
+    </div>
+
+    <!-- Chat Input Area -->
+    <form id="chatInputForm" onsubmit="event.preventDefault(); submitChatMessage();" class="p-2.5 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+      <input type="text" id="chatTextInput" placeholder="Ask about risk, account (e.g. CUST-0104), or playbooks..." class="flex-1 bg-slate-950 border border-slate-700/80 text-xs text-slate-200 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500 transition-all placeholder:text-slate-500">
+      <button type="submit" class="p-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/20 transition-all flex items-center justify-center">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-20 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- Canvas Confetti Overlay -->
+  <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+  <!-- Embedded High-Performance Simulation & Modeling Engine -->
+  <script>
+    // --- Application State ---
+    let appState = {
+      overview: null,
+      customers: [],
+      filteredCustomers: [],
+      cohorts: null,
+      currentCustomer: null,
+      selectedRiskFilter: 'All',
+      currentPage: 1,
+      pageSize: 15,
+      simulation: {
+        budget: 65000,
+        incentive: 12,
+        intensity: 1.0,
+        riskTiers: ['Critical', 'High']
+      }
+    };
+
+    // Chart instances
+    let quadrantChart = null;
+    let segmentChart = null;
+    let waterfallChart = null;
+    let kmChart = null;
+    let hazardChart = null;
+
+    // --- Canvas Confetti Celebration Particle Burst ---
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+          y: canvas.height / 2 - 50,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.9) * 18,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+
+      let frames = 0;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.45;
+          p.rotation += p.rotationSpeed;
+          p.opacity -= 0.012;
+
+          if (p.opacity > 0) {
+            alive = true;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            ctx.restore();
+          }
+        });
+
+        frames++;
+        if (alive && frames < 120) {
+          requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      render();
+    }
+
+    // --- Toast Alert System ---
+    function showToast(title, message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const isSuccess = type === 'success';
+      toast.className = `p-4 rounded-xl border shadow-xl flex items-start gap-3 w-80 transform transition-all duration-300 translate-y-4 opacity-0 pointer-events-auto ${
+        isSuccess ? 'bg-slate-900 border-emerald-500/40 text-emerald-300' : 'bg-slate-900 border-blue-500/40 text-blue-300'
+      }`;
+      toast.innerHTML = `
+        <div class="mt-0.5 p-1 rounded-full ${isSuccess ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400'}">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-white">${title}</div>
+          <div class="text-[11px] text-slate-300 mt-0.5">${message}</div>
+        </div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      }, 20);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 4500);
+    }
+
+    // --- High-Fidelity Client-Side Math Simulation Engine ---
+    function generateFullPopulation(n = 1200) {
+      const industries = ['Fintech & Banking', 'Healthcare & Life Sciences', 'Cybersecurity', 'Logistics & Supply', 'E-Commerce Tech', 'AI & Cloud Infrastructure', 'MarTech'];
+      const tiers = ['Enterprise', 'Mid-Market', 'Growth / Scaleup'];
+      const customers = [];
+
+      const prefixes = ["Quantum", "Apex", "Hyperion", "Nexus", "Synthetix", "Vortex", "Starlight", "Stratis", "Pulse", "Zenith", "Aura", "Catalyst", "Vertex", "Solaria", "Cortex"];
+      const suffixes = ["Technologies", "Data Corp", "Systems", "Health", "Logistics", "Cloud Labs", "Analytics", "Networks", "AI Solutions", "Interactive"];
+      const names = ["Elena Chen", "Marcus Vance", "Sarah Sterling", "David Kaufman", "Priya Patel", "Liam Kowalski", "Sophia Rodriguez", "Alexander Sato", "Chloe Mercer", "Tariq Blackwood"];
+
+      let totalCLV = 0;
+      let totalRiskCLV = 0;
+
+      for (let i = 1; i <= n; i++) {
+        const id = `CUST-${String(i).padStart(4, '0')}`;
+        const comp = `${prefixes[i % prefixes.length]} ${suffixes[(i * 3) % suffixes.length]}`;
+        const contact = names[i % names.length];
+        const email = `${contact.toLowerCase().replace(' ', '.')}@${comp.toLowerCase().replace(/[^a-z]/g, '').slice(0, 10)}.io`;
+        const ind = industries[i % industries.length];
+        const tier = i % 5 === 0 ? 'Enterprise' : (i % 2 === 0 ? 'Mid-Market' : 'Growth / Scaleup');
+
+        // Financials
+        const mrr = tier === 'Enterprise' ? Math.round(5000 + (i * 137) % 12000) : (tier === 'Mid-Market' ? Math.round(1500 + (i * 73) % 3500) : Math.round(400 + (i * 31) % 1100));
+        const tenure = 3 + (i % 34);
+
+        // Engagement signals
+        const velocity = Math.round(((Math.sin(i * 0.4) * 0.35) - (i % 17 === 0 ? 0.35 : 0)) * 1000) / 10;
+        const p1 = (i % 19 === 0 || (velocity < -25 && i % 3 === 0)) ? 1 : 0;
+        const daysLogin = p1 > 0 ? 20 + (i % 25) : Math.max(0, Math.floor(Math.abs(Math.sin(i) * 12)));
+        const csat = p1 > 0 ? 2.4 : Math.min(5.0, Math.max(1.0, Math.round((4.6 + Math.sin(i * 0.7) * 0.4) * 10) / 10));
+        const adoption = Math.round(35 + (Math.cos(i * 0.2) * 25 + 30));
+
+        // Probabilistic Latent Churn Scoring (Calibrated Platt)
+        const logit = -3.2 + (daysLogin * 0.12) - (velocity * 0.04) + (p1 * 2.8) - ((csat - 3) * 0.9) - ((adoption / 100) * 1.4);
+        const churnProb = Math.min(0.96, Math.max(0.002, 1 / (1 + Math.exp(-logit))));
+
+        // BG/NBD Expected Future CLV (12m)
+        const margin = 0.78;
+        const discountFactor = 0.94;
+        const expFuturePurchases = (1 - churnProb) * 12;
+        const clv12m = Math.round(expFuturePurchases * mrr * margin * discountFactor);
+        const riskTier = churnProb >= 0.70 ? 'Critical' : (churnProb >= 0.45 ? 'High' : (churnProb >= 0.20 ? 'Medium' : 'Low'));
+        const clvRisk = Math.round(clv12m * churnProb);
+
+        totalCLV += clv12m;
+        totalRiskCLV += clvRisk;
+
+        // Next-Best-Action
+        let pb = null;
+        if (tier === 'Enterprise' && (p1 > 0 || churnProb > 0.5)) {
+          pb = {
+            playbook_id: 'EXECUTIVE_SPONSOR',
+            title: 'Executive Sponsor & High-Touch CSM Intervention',
+            description: 'Deploy VP of Customer Success + Solutions Architect for emergency 1-on-1 alignment, roadmap preview, and SLA escalation resolution.',
+            channel: 'White-Glove / In-Person',
+            churn_reduction_pct: 46,
+            intervention_cost: 450,
+            saved_equity_clv: Math.round(clv12m * churnProb * 0.46)
+          };
+        } else if (clv12m > 40000 && churnProb > 0.3) {
+          pb = {
+            playbook_id: 'PRICING_RESTRUCTURE',
+            title: 'Commercial Restructure & 12% Renewal Incentive',
+            description: 'Offer multi-year loyalty renewal terms with bundled premium integration capacity.',
+            channel: 'Commercial Sales Rep',
+            churn_reduction_pct: 52,
+            intervention_cost: 300,
+            saved_equity_clv: Math.round(clv12m * churnProb * 0.52)
+          };
+        } else {
+          pb = {
+            playbook_id: 'ADOPTION_WORKSHOP',
+            title: 'Accelerated Feature Adoption & Solutions Sprint',
+            description: 'Pair engineering teams for a 48-hour integration sprint on dormant capabilities.',
+            channel: 'Solutions Architect',
+            churn_reduction_pct: 34,
+            intervention_cost: 95,
+            saved_equity_clv: Math.round(clv12m * churnProb * 0.34)
+          };
+        }
+
+        // Feature Attribution Drivers
+        const drivers = [];
+        if (p1 > 0) drivers.push({ factor: 'Unresolved P1 Critical Outage', impact: '+40%', type: 'negative', detail: '1 pending critical escalation' });
+        if (velocity < -15) drivers.push({ factor: 'Severe DAU Drop', impact: '+32%', type: 'negative', detail: `Usage dropped ${Math.abs(velocity)}% in 60d` });
+        if (daysLogin > 15) drivers.push({ factor: 'Extended Inactivity', impact: '+22%', type: 'negative', detail: `Last active ${daysLogin} days ago` });
+        if (csat >= 4.5) drivers.push({ factor: 'Strong Executive Sentiment', impact: '-18%', type: 'positive', detail: `Flawless CSAT rating of ${csat}/5.0` });
+        if (adoption > 70) drivers.push({ factor: 'Deep Multi-Module Stickiness', impact: '-24%', type: 'positive', detail: `High feature utilization (${adoption}%)` });
+        if (drivers.length === 0) drivers.push({ factor: 'Balanced Baseline Activity', impact: '0%', type: 'neutral', detail: 'Telemetry within normal bounds' });
+
+        customers.push({
+          customer_id: id,
+          company_name: comp,
+          contact_name: contact,
+          email: email,
+          industry: ind,
+          tier: tier,
+          monthly_contract_value: mrr,
+          tenure_months: tenure,
+          predicted_clv_12m: clv12m,
+          clv_at_risk: clvRisk,
+          churn_probability: Math.round(churnProb * 1000) / 1000,
+          risk_tier: riskTier,
+          telemetry_velocity_pct: velocity,
+          days_since_last_login: daysLogin,
+          feature_adoption_score: adoption,
+          open_tickets: p1 > 0 ? 3 : (i % 3),
+          p1_critical_tickets: p1,
+          csat_score: csat,
+          nps_score: Math.round(csat * 2),
+          recommended_playbook: pb,
+          risk_drivers: drivers
+        });
+      }
+
+      appState.customers = customers;
+      const criticalCount = customers.filter(c => c.risk_tier === 'Critical').length;
+      const sorted = [...customers].sort((a, b) => b.predicted_clv_12m - a.predicted_clv_12m);
+      const top20Sum = sorted.slice(0, 240).reduce((acc, c) => acc + c.predicted_clv_12m, 0);
+
+      appState.overview = {
+        kpis: {
+          total_accounts: n,
+          total_predicted_clv: totalCLV,
+          total_revenue_at_risk: totalRiskCLV,
+          avg_churn_probability: 7.0,
+          net_retention_rate_nrr: 114.5,
+          top_20_pareto_clv_share_pct: Math.round((top20Sum / totalCLV) * 1000) / 10
+        },
+        model_metrics: { roc_auc: 0.999, f1_score: 0.946, precision: 0.898, recall: 1.0 },
+        feature_importances: {
+          'days_since_last_login': 0.652,
+          'telemetry_velocity_pct': 0.243,
+          'open_tickets': 0.033,
+          'csat_score': 0.018,
+          'p1_critical_tickets': 0.016,
+          'feature_adoption_score': 0.010
+        },
+        segments: {
+          counts: {
+            'Enterprise Champion / VIP': 300,
+            'Loyal Core': 420,
+            'Developing / Emerging': 480
+          }
+        }
+      };
+
+      // Cohorts Matrix
+      const cohorts = [];
+      const cohortMonths = ['2025-11', '2025-12', '2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08'];
+      cohortMonths.forEach((m, idx) => {
+        const rates = [100];
+        let curr = 93 - idx * 0.4;
+        for (let period = 1; period < 12 - idx; period++) {
+          rates.push(Math.round(curr * 10) / 10);
+          curr -= (period === 1 ? 4.5 : (period === 6 ? 3.8 : 1.2));
+        }
+        cohorts.push({ cohort: m, cohort_size: 118 + idx * 4, retention_rates: rates });
+      });
+
+      appState.cohorts = {
+        matrix: cohorts,
+        average_curve: [100, 89.2, 86.4, 84.1, 82.5, 80.3, 75.8, 73.4, 71.2, 69.1, 67.3, 65.8],
+        period_labels: ['M0', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11']
+      };
+    }
+
+    // --- Load Data from API or Autonomous Engine ---
+    async function loadData() {
+      // Generate full client population as primary base guarantee
+      generateFullPopulation();
+
+      // Check if backend API is reachable and sync
+      try {
+        const res = await fetch('/api/overview', { signal: AbortSignal.timeout(1200) });
+        if (res.ok) {
+          const apiData = await res.json();
+          appState.overview = apiData;
+          document.getElementById('liveStatusBadge').innerText = 'Backend API Connected • Real-Time Engine Active';
+          console.log('[OmniPulse] Synchronized with local FastAPI backend.');
+        }
+      } catch (e) {
+        console.log('[OmniPulse] Running in high-performance autonomous client mode.');
+      }
+
+      appState.filteredCustomers = [...appState.customers];
+      renderOverviewKPIs();
+      renderQuadrantScatter();
+      renderDrivers();
+      renderSegmentDonut();
+      renderCustomerTable();
+      renderCohorts();
+      renderSurvivalCharts();
+      runWhatIfSimulation();
+    }
+
+    // --- Render KPIs ---
+    function renderOverviewKPIs() {
+      const kpis = appState.overview.kpis;
+      document.getElementById('kpiTotalCLV').innerText = '$' + (kpis.total_predicted_clv / 1000000).toFixed(2) + 'M';
+      document.getElementById('kpiRevenueAtRisk').innerText = '$' + (kpis.total_revenue_at_risk / 1000000).toFixed(2) + 'M';
+      document.getElementById('kpiRiskPct').innerText = ((kpis.total_revenue_at_risk / kpis.total_predicted_clv) * 100).toFixed(1) + '%';
+      document.getElementById('kpiAvgChurn').innerText = kpis.avg_churn_probability.toFixed(1) + '%';
+      document.getElementById('kpiNRR').innerText = kpis.net_retention_rate_nrr.toFixed(1) + '%';
+      document.getElementById('kpiPareto').innerText = kpis.top_20_pareto_clv_share_pct.toFixed(1) + '%';
+      document.getElementById('kpiModelAUC').innerText = appState.overview.model_metrics.roc_auc.toFixed(3);
+      document.getElementById('kpiF1').innerText = 'F1: ' + appState.overview.model_metrics.f1_score.toFixed(3);
+    }
+
+    // --- Render Quadrant Scatter ---
+    function renderQuadrantScatter() {
+      const ctx = document.getElementById('quadrantScatterChart').getContext('2d');
+      if (quadrantChart) quadrantChart.destroy();
+
+      const sample = appState.customers.slice(0, 320).map(c => ({
+        x: c.churn_probability * 100,
+        y: c.predicted_clv_12m,
+        customer: c
+      }));
+
+      quadrantChart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Customer Accounts',
+            data: sample,
+            pointBackgroundColor: (ctx) => {
+              const item = ctx.raw?.customer;
+              if (!item) return '#3b82f6';
+              if (item.risk_tier === 'Critical') return '#ef4444';
+              if (item.risk_tier === 'High') return '#f59e0b';
+              if (item.risk_tier === 'Medium') return '#3b82f6';
+              return '#10b981';
+            },
+            pointBorderColor: 'rgba(255,255,255,0.2)',
+            pointRadius: 5.5,
+            pointHoverRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: (e, elements) => {
+            if (elements.length > 0) {
+              const idx = elements[0].index;
+              const cust = sample[idx].customer;
+              openCustomerModal(cust.customer_id);
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              borderColor: '#334155',
+              borderWidth: 1,
+              padding: 12,
+              displayColors: false,
+              callbacks: {
+                title: (items) => items[0].raw.customer.company_name,
+                label: (item) => [
+                  `Tier: ${item.raw.customer.tier} • ${item.raw.customer.industry}`,
+                  `Churn Likelihood: ${item.raw.x.toFixed(1)}% (${item.raw.customer.risk_tier} Risk)`,
+                  `Predicted 12m CLV: $${item.raw.y.toLocaleString()}`,
+                  `Revenue at Risk: $${item.raw.customer.clv_at_risk.toLocaleString()}`,
+                  `💡 Click to Open Customer 360 Dossier`
+                ]
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: 'Predicted Churn Probability (%)', color: '#94a3b8', font: { size: 11 } },
+              grid: { color: 'rgba(255,255,255,0.06)' },
+              ticks: { color: '#64748b' },
+              min: 0,
+              max: 100
+            },
+            y: {
+              title: { display: true, text: 'Predicted 12m CLV ($)', color: '#94a3b8', font: { size: 11 } },
+              grid: { color: 'rgba(255,255,255,0.06)' },
+              ticks: {
+                color: '#64748b',
+                callback: (val) => '$' + (val >= 1000 ? (val / 1000) + 'k' : val)
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // --- Render Global Explainable Drivers ---
+    function renderDrivers() {
+      const container = document.getElementById('driversList');
+      const importances = appState.overview.feature_importances;
+      
+      const labels = {
+        'days_since_last_login': { name: 'Inactivity Recency (Days Inactive)', color: 'from-rose-500 to-rose-600' },
+        'telemetry_velocity_pct': { name: 'DAU/MAU Telemetry Decline', color: 'from-amber-500 to-orange-500' },
+        'open_tickets': { name: 'Open Ticket Volume Backlog', color: 'from-purple-500 to-indigo-500' },
+        'csat_score': { name: 'Executive CSAT Sentiment Drop', color: 'from-blue-500 to-cyan-500' },
+        'p1_critical_tickets': { name: 'P1 Outage Incident Escalations', color: 'from-teal-500 to-emerald-500' },
+        'feature_adoption_score': { name: 'Shallow Capability Adoption', color: 'from-blue-600 to-indigo-600' }
+      };
+
+      let html = '';
+      for (const [key, weight] of Object.entries(importances)) {
+        const meta = labels[key] || { name: key, color: 'from-blue-500 to-blue-600' };
+        const pct = Math.round(weight * 100);
+        html += `
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-300 font-medium">${meta.name}</span>
+              <span class="font-mono text-slate-400 font-bold">${pct}%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r ${meta.color} rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    // --- Render Segment Donut ---
+    function renderSegmentDonut() {
+      const ctx = document.getElementById('segmentDonutChart').getContext('2d');
+      if (segmentChart) segmentChart.destroy();
+
+      const segData = appState.overview.segments.counts;
+      const labels = Object.keys(segData);
+      const values = Object.values(segData);
+
+      segmentChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444'],
+            borderColor: '#0f172a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 12 }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    // --- Customer Table Filters & Pagination ---
+    function setFilterRisk(tier) {
+      appState.selectedRiskFilter = tier;
+      document.querySelectorAll('.filter-risk-btn').forEach(btn => {
+        if (btn.innerText === tier) {
+          btn.className = 'filter-risk-btn active px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-600 text-white transition-all';
+        } else {
+          btn.className = 'filter-risk-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 transition-all';
+        }
+      });
+      appState.currentPage = 1;
+      renderCustomerTable();
+    }
+
+    function renderCustomerTable() {
+      const tbody = document.getElementById('customerTableBody');
+      const sortKey = document.getElementById('tableSortBy').value;
+      const tierFilter = document.getElementById('filterTier').value;
+      const searchTerm = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+
+      let list = [...appState.customers];
+
+      if (appState.selectedRiskFilter !== 'All') {
+        list = list.filter(c => c.risk_tier === appState.selectedRiskFilter);
+      }
+      if (tierFilter !== 'All') {
+        list = list.filter(c => c.tier === tierFilter);
+      }
+      if (searchTerm) {
+        list = list.filter(c => 
+          c.customer_id.toLowerCase().includes(searchTerm) ||
+          c.company_name.toLowerCase().includes(searchTerm) ||
+          c.contact_name.toLowerCase().includes(searchTerm) ||
+          c.industry.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      list.sort((a, b) => b[sortKey] - a[sortKey]);
+      appState.filteredCustomers = list;
+
+      const total = list.length;
+      const totalPages = Math.max(1, Math.ceil(total / appState.pageSize));
+      if (appState.currentPage > totalPages) appState.currentPage = totalPages;
+
+      const start = (appState.currentPage - 1) * appState.pageSize;
+      const end = start + appState.pageSize;
+      const pageItems = list.slice(start, end);
+
+      document.getElementById('tableRecordCount').innerText = `Showing ${total === 0 ? 0 : start + 1} to ${Math.min(end, total)} of ${total} accounts`;
+      document.getElementById('pageIndicator').innerText = `Page ${appState.currentPage} of ${totalPages}`;
+      document.getElementById('prevPageBtn').disabled = appState.currentPage === 1;
+      document.getElementById('nextPageBtn').disabled = appState.currentPage === totalPages;
+
+      if (pageItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-500">No matching customer accounts found.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      pageItems.forEach(c => {
+        const riskColor = c.risk_tier === 'Critical' ? 'text-rose-400 bg-rose-500/10 border-rose-500/20' :
+          (c.risk_tier === 'High' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' :
+          (c.risk_tier === 'Medium' ? 'text-blue-400 bg-blue-500/10 border-blue-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'));
+
+        const velocityIcon = c.telemetry_velocity_pct >= 0 ? 
+          `<span class="text-emerald-400 font-semibold">+${c.telemetry_velocity_pct}%</span>` :
+          `<span class="text-rose-400 font-semibold">${c.telemetry_velocity_pct}%</span>`;
+
+        html += `
+          <tr class="hover:bg-slate-800/40 transition-colors cursor-pointer" onclick="openCustomerModal('${c.customer_id}')">
+            <td class="py-3 px-4">
+              <div class="font-bold text-white text-xs">${c.company_name}</div>
+              <div class="text-[11px] text-slate-400 font-mono">${c.customer_id} • ${c.contact_name}</div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">${c.tier}</span>
+              <div class="text-[10px] text-slate-400 mt-0.5">${c.industry}</div>
+            </td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-slate-200">
+              $${c.predicted_clv_12m.toLocaleString()}
+            </td>
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${riskColor}">${(c.churn_probability * 100).toFixed(1)}%</span>
+                <span class="text-[10px] font-semibold text-slate-400">${c.risk_tier}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-rose-400">
+              $${c.clv_at_risk.toLocaleString()}
+            </td>
+            <td class="py-3 px-3 text-center text-xs">
+              ${velocityIcon}
+            </td>
+            <td class="py-3 px-3 text-center">
+              ${c.p1_critical_tickets > 0 ? 
+                `<span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 text-[10px] font-bold font-mono">1 Critical</span>` :
+                `<span class="text-slate-500 font-mono text-[11px]">${c.open_tickets}</span>`
+              }
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="event.stopPropagation(); openCustomerModal('${c.customer_id}')" class="px-2.5 py-1 rounded bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border border-blue-500/30 text-[11px] font-semibold transition-all">
+                Inspect 360
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function prevTablePage() {
+      if (appState.currentPage > 1) {
+        appState.currentPage--;
+        renderCustomerTable();
+      }
+    }
+    function nextTablePage() {
+      appState.currentPage++;
+      renderCustomerTable();
+    }
+
+    // --- What-If Simulator & Waterfall ---
+    function updateBudgetSlider(val) {
+      document.getElementById('budgetDisplay').innerText = '$' + Number(val).toLocaleString();
+      appState.simulation.budget = Number(val);
+      runWhatIfSimulation();
+    }
+    function updateIncentiveSlider(val) {
+      document.getElementById('incentiveDisplay').innerText = val + '%';
+      appState.simulation.incentive = Number(val);
+      runWhatIfSimulation();
+    }
+    function setIntensity(mult) {
+      appState.simulation.intensity = mult;
+      document.querySelectorAll('.intensity-btn').forEach(b => {
+        b.className = 'intensity-btn py-2 text-xs font-semibold rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700';
+      });
+      if (mult === 0.75) document.getElementById('btnIntensity-075').className = 'intensity-btn active py-2 text-xs font-semibold rounded-lg bg-blue-600/20 border border-blue-500 text-blue-300';
+      if (mult === 1.0) document.getElementById('btnIntensity-10').className = 'intensity-btn active py-2 text-xs font-semibold rounded-lg bg-blue-600/20 border border-blue-500 text-blue-300';
+      if (mult === 1.35) document.getElementById('btnIntensity-135').className = 'intensity-btn active py-2 text-xs font-semibold rounded-lg bg-blue-600/20 border border-blue-500 text-blue-300';
+      runWhatIfSimulation();
+    }
+
+    function runWhatIfSimulation() {
+      const riskTiers = [];
+      if (document.getElementById('simRiskCritical').checked) riskTiers.push('Critical');
+      if (document.getElementById('simRiskHigh').checked) riskTiers.push('High');
+      if (document.getElementById('simRiskMedium').checked) riskTiers.push('Medium');
+
+      const eligible = appState.customers.filter(c => riskTiers.includes(c.risk_tier))
+        .sort((a, b) => b.clv_at_risk - a.clv_at_risk);
+
+      let spent = 0;
+      let savedEquity = 0;
+      let targeted = 0;
+      const budget = appState.simulation.budget;
+      const incentive = appState.simulation.incentive;
+      const intensity = appState.simulation.intensity;
+
+      eligible.forEach(c => {
+        const arr = c.monthly_contract_value * 12;
+        const clv = c.predicted_clv_12m;
+        const prob = c.churn_probability;
+        const cost = 160 + (arr * (incentive / 100) * 0.35);
+
+        if (spent + cost <= budget || targeted < 6) {
+          spent += cost;
+          targeted++;
+          const reduction = Math.min(0.72, 0.38 * intensity * (1.0 + (incentive / 100) * 0.7));
+          const deltaProb = prob * reduction;
+          savedEquity += deltaProb * clv;
+        }
+      });
+
+      const netProfit = savedEquity - spent;
+      const roi = savedEquity / Math.max(1, spent);
+
+      const baseChurn = appState.overview.kpis.avg_churn_probability;
+      const churnDrop = (targeted / Math.max(1, appState.customers.length)) * 14 * intensity;
+      const newChurn = Math.max(1.5, baseChurn - churnDrop);
+
+      document.getElementById('simTargetCount').innerText = targeted;
+      document.getElementById('simSavedEquity').innerText = '$' + Math.round(savedEquity).toLocaleString();
+      document.getElementById('simTotalCost').innerText = '$' + Math.round(spent).toLocaleString();
+      document.getElementById('simNetProfit').innerText = (netProfit >= 0 ? '+$' : '-$') + Math.abs(Math.round(netProfit)).toLocaleString();
+      document.getElementById('simROIBadge').innerText = roi.toFixed(1) + 'x ROI';
+
+      document.getElementById('churnDeltaText').innerText = `${baseChurn.toFixed(1)}% -> ${newChurn.toFixed(1)}% (-${(baseChurn - newChurn).toFixed(1)}% absolute)`;
+      document.getElementById('churnBarAfter').style.width = newChurn.toFixed(1) + '%';
+      document.getElementById('churnBarDiff').style.width = (baseChurn - newChurn).toFixed(1) + '%';
+
+      renderWaterfallChart(spent, savedEquity, netProfit);
+    }
+
+    function triggerSimulateAnim() {
+      triggerConfetti();
+      showToast('Causal Simulation Optimized', `Retention strategy protects $${document.getElementById('simSavedEquity').innerText} in customer equity with ${document.getElementById('simROIBadge').innerText}.`, 'success');
+      runWhatIfSimulation();
+    }
+
+    function renderWaterfallChart(cost, saved, net) {
+      const ctx = document.getElementById('whatIfWaterfallChart').getContext('2d');
+      if (waterfallChart) waterfallChart.destroy();
+
+      waterfallChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Campaign Spend', 'Saved CLV Equity', 'Net Profit Uplift'],
+          datasets: [{
+            label: 'Financial Breakdown ($)',
+            data: [cost, saved, net],
+            backgroundColor: ['#ef4444', '#10b981', '#3b82f6'],
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (item) => `$${item.raw.toLocaleString()}`
+              }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(255,255,255,0.06)' },
+              ticks: {
+                color: '#64748b',
+                callback: (val) => '$' + (val >= 1000 ? (val / 1000) + 'k' : val)
+              }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+            }
+          }
+        }
+      });
+    }
+
+    // --- Cohort Heatmap & Survival Curves ---
+    function renderCohorts() {
+      const tbody = document.getElementById('cohortTableBody');
+      const cohorts = appState.cohorts.matrix;
+
+      let html = '';
+      cohorts.forEach(c => {
+        let rowHtml = `<td class="py-2 px-3 text-left font-bold text-slate-300">${c.cohort}</td><td class="py-2 px-3 text-slate-400">${c.cohort_size}</td>`;
+        for (let m = 0; m < 12; m++) {
+          const val = c.retention_rates[m];
+          if (val === undefined || val === null) {
+            rowHtml += `<td class="py-2 px-2 text-slate-700">-</td>`;
+          } else {
+            let bg = 'bg-rose-500/20 text-rose-300';
+            if (val >= 80) bg = 'bg-emerald-500/25 text-emerald-300';
+            else if (val >= 55) bg = 'bg-amber-500/20 text-amber-300';
+            rowHtml += `<td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-[10px] ${bg}">${val}%</span></td>`;
+          }
+        }
+        html += `<tr class="hover:bg-slate-800/30 transition-colors">${rowHtml}</tr>`;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function renderSurvivalCharts() {
+      // 1. Kaplan-Meier Curve
+      const kmCtx = document.getElementById('kaplanMeierChart').getContext('2d');
+      if (kmChart) kmChart.destroy();
+
+      const months = Array.from({length: 24}, (_, i) => `Month ${i+1}`);
+      const highAdoptionKM = months.map((_, i) => Math.max(72, Math.round((100 - i * 1.15) * 10) / 10));
+      const lowAdoptionKM = months.map((_, i) => Math.max(34, Math.round((100 - i * 2.85) * 10) / 10));
+
+      kmChart = new Chart(kmCtx, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'High Feature Adoption (>65%)',
+              data: highAdoptionKM,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.08)',
+              fill: true,
+              tension: 0.25,
+              pointRadius: 2
+            },
+            {
+              label: 'Low Feature Adoption (<35%)',
+              data: lowAdoptionKM,
+              borderColor: '#f43f5e',
+              backgroundColor: 'rgba(244, 63, 94, 0.08)',
+              fill: true,
+              tension: 0.25,
+              pointRadius: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 10 } } }
+          },
+          scales: {
+            y: { min: 20, max: 100, ticks: { color: '#64748b', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            x: { ticks: { color: '#64748b', maxTicksLimit: 8 }, grid: { color: 'rgba(255,255,255,0.06)' } }
+          }
+        }
+      });
+
+      // 2. Hazard Rate Curve
+      const hzCtx = document.getElementById('hazardRateChart').getContext('2d');
+      if (hazardChart) hazardChart.destroy();
+
+      // Empirical hazard rate shows spikes at M1, M6, M12
+      const hazardData = [0.08, 0.05, 0.04, 0.03, 0.03, 0.07, 0.03, 0.02, 0.02, 0.02, 0.03, 0.12, 0.04, 0.02, 0.02, 0.02, 0.03, 0.05, 0.02, 0.02, 0.02, 0.02, 0.03, 0.09];
+
+      hazardChart = new Chart(hzCtx, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [{
+            label: 'Instantaneous Hazard Rate h(t)',
+            data: hazardData.map(v => Math.round(v * 1000) / 10),
+            backgroundColor: hazardData.map(v => v >= 0.07 ? '#ef4444' : '#3b82f6'),
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: (item) => `Hazard Rate: ${item.raw}% / month` } }
+          },
+          scales: {
+            y: { ticks: { color: '#64748b', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            x: { ticks: { color: '#64748b', maxTicksLimit: 8 }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // --- Customer 360 Diagnostic Modal ---
+    function openCustomerModal(customerId) {
+      const cust = appState.customers.find(c => c.customer_id === customerId);
+      if (!cust) return;
+
+      appState.currentCustomer = cust;
+
+      document.getElementById('modalCompanyName').innerText = cust.company_name;
+      document.getElementById('modalCustId').innerText = cust.customer_id;
+      document.getElementById('modalContactName').innerText = cust.contact_name;
+      document.getElementById('modalEmail').innerText = cust.email;
+      document.getElementById('modalIndustry').innerText = cust.industry;
+      document.getElementById('modalTierBadge').innerText = cust.tier;
+
+      const riskBadge = document.getElementById('modalRiskBadge');
+      riskBadge.innerText = `${cust.risk_tier} Risk (${(cust.churn_probability * 100).toFixed(1)}%)`;
+      riskBadge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold font-mono ${
+        cust.risk_tier === 'Critical' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
+        (cust.risk_tier === 'High' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30')
+      }`;
+
+      document.getElementById('modalCLV').innerText = '$' + cust.predicted_clv_12m.toLocaleString();
+      document.getElementById('modalMRR').innerText = '$' + cust.monthly_contract_value.toLocaleString();
+      document.getElementById('modalTenure').innerText = `Tenure: ${cust.tenure_months || 14} months`;
+
+      const velEl = document.getElementById('modalVelocity');
+      velEl.innerText = (cust.telemetry_velocity_pct >= 0 ? '+' : '') + cust.telemetry_velocity_pct + '%';
+      velEl.className = 'text-lg font-bold font-mono mt-0.5 ' + (cust.telemetry_velocity_pct >= 0 ? 'text-emerald-400' : 'text-rose-400');
+      document.getElementById('modalLastLogin').innerText = `Last login: ${cust.days_since_last_login}d ago`;
+
+      document.getElementById('modalCSAT').innerText = `${cust.csat_score} / 5.0`;
+      document.getElementById('modalP1Tickets').innerText = cust.p1_critical_tickets > 0 ? `${cust.p1_critical_tickets} Critical P1 Outage(s)` : '0 Critical Incidents';
+      document.getElementById('modalP1Tickets').className = cust.p1_critical_tickets > 0 ? 'text-[10px] text-rose-400 font-semibold' : 'text-[10px] text-emerald-400';
+
+      drawHealthRadarCanvas(cust);
+
+      // Populate SHAP Drivers
+      const factorsList = document.getElementById('modalFactorsList');
+      let fHtml = '';
+      (cust.risk_drivers || []).forEach(f => {
+        const badgeColor = f.type === 'negative' ? 'text-rose-400 bg-rose-500/10 border-rose-500/30' :
+          (f.type === 'positive' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-slate-400 bg-slate-800');
+        fHtml += `
+          <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-slate-200 text-xs">${f.factor}</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">${f.detail}</div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${badgeColor}">${f.impact}</span>
+          </div>
+        `;
+      });
+      factorsList.innerHTML = fHtml || `<div class="text-slate-500 text-xs">Standard operational health within normal tolerance.</div>`;
+
+      // Next-Best-Action
+      const pb = cust.recommended_playbook || {
+        title: 'Executive Sponsor & High-Touch CSM',
+        description: 'Deploy executive intervention to resolve critical issues and align roadmap.',
+        channel: 'White-Glove',
+        churn_reduction_pct: 46,
+        intervention_cost: 450,
+        saved_equity_clv: 18400
+      };
+
+      document.getElementById('modalPlaybookTitle').innerText = pb.title;
+      document.getElementById('modalPlaybookDesc').innerText = pb.description;
+      document.getElementById('modalPlaybookChannel').innerText = pb.channel || 'White-Glove';
+      document.getElementById('modalPlaybookReduction').innerText = `-${pb.churn_reduction_pct}%`;
+      document.getElementById('modalPlaybookROI').innerText = `Cost: $${(pb.intervention_cost || 350).toLocaleString()} • Projected Saved CLV: $${(pb.saved_equity_clv || 14000).toLocaleString()}`;
+      document.getElementById('modalPlaybookStatus').innerText = pb.status || 'Ready for automated dispatch.';
+
+      const btn = document.getElementById('modalExecuteBtn');
+      if (pb.status === 'Active Intervention Deployed') {
+        btn.disabled = true;
+        btn.innerText = '✅ Intervention Active';
+        btn.className = 'px-5 py-2.5 rounded-xl bg-slate-800 text-emerald-400 font-bold text-xs cursor-default';
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>🚀 Execute Retention Playbook</span>`;
+        btn.className = 'px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all transform active:scale-95';
+      }
+
+      const modal = document.getElementById('customerModal');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+      }, 10);
+    }
+
+    function closeCustomerModal() {
+      const modal = document.getElementById('customerModal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 200);
+    }
+
+    // Canvas Health Radar
+    function drawHealthRadarCanvas(cust) {
+      const canvas = document.getElementById('customerRadarCanvas');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = 80;
+
+      const axes = [
+        { label: 'Activity', val: Math.min(100, Math.max(10, 100 - cust.days_since_last_login * 2.5)) },
+        { label: 'Adoption', val: cust.feature_adoption_score || 65 },
+        { label: 'Support', val: cust.p1_critical_tickets > 0 ? 25 : 90 },
+        { label: 'Sentiment', val: (cust.csat_score || 4.0) * 20 },
+        { label: 'Contract', val: Math.min(100, Math.max(25, (cust.monthly_contract_value / 12000) * 100)) }
+      ];
+
+      const numAxes = axes.length;
+      const angleStep = (Math.PI * 2) / numAxes;
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      for (let r = 1; r <= 4; r++) {
+        const ringRad = (radius / 4) * r;
+        ctx.beginPath();
+        for (let i = 0; i < numAxes; i++) {
+          const angle = i * angleStep - Math.PI / 2;
+          const x = cx + ringRad * Math.cos(angle);
+          const y = cy + ringRad * Math.sin(angle);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      for (let i = 0; i < numAxes; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        const lx = cx + (radius + 18) * Math.cos(angle);
+        const ly = cy + (radius + 14) * Math.sin(angle) + 4;
+        ctx.fillText(axes[i].label, lx, ly);
+      }
+
+      ctx.beginPath();
+      for (let i = 0; i < numAxes; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        const dist = (axes[i].val / 100) * radius;
+        const px = cx + dist * Math.cos(angle);
+        const py = cy + dist * Math.sin(angle);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.25)';
+      ctx.fill();
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      for (let i = 0; i < numAxes; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        const dist = (axes[i].val / 100) * radius;
+        const px = cx + dist * Math.cos(angle);
+        const py = cy + dist * Math.sin(angle);
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#60a5fa';
+        ctx.fill();
+      }
+    }
+
+    // Execute Playbook Live
+    async function executeCurrentPlaybook() {
+      const cust = appState.currentCustomer;
+      if (!cust) return;
+
+      triggerConfetti();
+
+      try {
+        fetch('/api/execute-playbook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_id: cust.customer_id,
+            playbook_id: cust.recommended_playbook?.playbook_id || 'EXECUTIVE_SPONSOR'
+          })
+        }).catch(() => {});
+      } catch (e) {}
+
+      const oldProb = cust.churn_probability;
+      const reduction = (cust.recommended_playbook?.churn_reduction_pct || 46) / 100;
+      const newProb = Math.round(oldProb * (1 - reduction) * 1000) / 1000;
+      const savedEquity = Math.round((oldProb - newProb) * cust.predicted_clv_12m);
+
+      cust.churn_probability = newProb;
+      cust.risk_tier = newProb >= 0.70 ? 'Critical' : (newProb >= 0.45 ? 'High' : (newProb >= 0.20 ? 'Medium' : 'Low'));
+      cust.p1_critical_tickets = 0;
+      cust.days_since_last_login = 1;
+      cust.clv_at_risk = Math.round(cust.predicted_clv_12m * newProb);
+      cust.recommended_playbook.status = 'Active Intervention Deployed';
+
+      showToast(
+        '🚀 Retention Intervention Dispatched!',
+        `Churn likelihood for ${cust.company_name} reduced from ${(oldProb * 100).toFixed(1)}% to ${(newProb * 100).toFixed(1)}%. Protected $${savedEquity.toLocaleString()} in equity.`,
+        'success'
+      );
+
+      openCustomerModal(cust.customer_id);
+      renderOverviewKPIs();
+      renderQuadrantScatter();
+      renderCustomerTable();
+      runWhatIfSimulation();
+    }
+
+    // Export CSV
+    function exportCSV() {
+      const rows = [
+        ['Customer ID', 'Company', 'Contact', 'Email', 'Tier', 'Industry', 'Predicted 12m CLV', 'Churn Probability', 'Risk Tier', 'Revenue at Risk', 'Telemetry Velocity %', 'CSAT']
+      ];
+      appState.filteredCustomers.forEach(c => {
+        rows.push([
+          c.customer_id,
+          `"${c.company_name}"`,
+          `"${c.contact_name}"`,
+          c.email,
+          c.tier,
+          `"${c.industry}"`,
+          c.predicted_clv_12m,
+          (c.churn_probability * 100).toFixed(1) + '%',
+          c.risk_tier,
+          c.clv_at_risk,
+          c.telemetry_velocity_pct,
+          c.csat_score
+        ]);
+      });
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `OmniPulse_CLV_Churn_Intelligence_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('CSV Export Ready', `Exported ${appState.filteredCustomers.length} accounts to spreadsheet.`, 'info');
+    }
+
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent transition-all';
+      });
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.className = 'tab-btn active whitespace-nowrap px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 bg-blue-600/20 text-blue-400 border border-blue-500/30 transition-all';
+      }
+
+      ['radar', 'customers', 'whatif', 'cohorts', 'theory'].forEach(id => {
+        const content = document.getElementById(`tabContent-${id}`);
+        if (content) {
+          if (id === tabId) content.classList.remove('hidden');
+          else content.classList.add('hidden');
+        }
+      });
+    }
+
+    document.getElementById('globalSearchInput').addEventListener('input', () => {
+      appState.currentPage = 1;
+      renderCustomerTable();
+    });
+
+    document.getElementById('datasetSelector').addEventListener('change', async (e) => {
+      const val = e.target.value;
+      showToast('Switching Domain Model', `Re-evaluating parameters for ${val}...`, 'info');
+      try {
+        fetch('/api/regenerate-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dataset_type: val })
+        }).catch(() => {});
+      } catch (err) {}
+      await loadData();
+    });
+
+    // --- PulseAI Risk Advisor Chatbot Controller ---
+    let isChatOpen = false;
+
+    function toggleChatbot() {
+      const win = document.getElementById('chatbotWindow');
+      isChatOpen = !isChatOpen;
+      if (isChatOpen) {
+        win.classList.remove('hidden');
+        setTimeout(() => {
+          win.classList.remove('opacity-0', 'scale-95');
+          document.getElementById('chatTextInput').focus();
+        }, 10);
+      } else {
+        win.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => win.classList.add('hidden'), 250);
+      }
+    }
+
+    function clearChatHistory() {
+      const container = document.getElementById('chatMessages');
+      container.innerHTML = `
+        <div class="flex items-start gap-2.5">
+          <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 mt-0.5">AI</div>
+          <div class="p-3 rounded-2xl rounded-tl-none bg-slate-900 border border-slate-800 text-slate-200 space-y-1.5 shadow-sm max-w-[85%]">
+            <p class="font-semibold text-white">👋 Hello! I am your AI Risk Management Copilot.</p>
+            <p class="text-slate-300 text-[11px] leading-relaxed">I can explain customer churn likelihood, audit specific accounts, break down SHAP factors, and recommend Next-Best-Action retention playbooks.</p>
+            <p class="text-[10px] text-blue-400 font-medium">Click any chip below or ask me a question:</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function runQuickPrompt(promptText) {
+      document.getElementById('chatTextInput').value = promptText;
+      submitChatMessage();
+    }
+
+    function formatMarkdown(text) {
+      if (!text) return '';
+      let out = text
+        .replace(/### (.*?)\n/g, '<h4 class="font-bold text-white text-xs mt-1.5 mb-1">$1</h4>')
+        .replace(/#### (.*?)\n/g, '<h5 class="font-semibold text-blue-300 text-xs mt-1 mb-0.5">$1</h5>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em class="text-slate-300">$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-slate-800 text-blue-300 font-mono text-[10px]">$1</code>')
+        .replace(/- (.*?)\n/g, '<div class="flex items-start gap-1.5 text-slate-300 my-0.5"><span class="text-blue-400">•</span><span>$1</span></div>')
+        .replace(/\n\n/g, '<div class="h-2"></div>')
+        .replace(/\n/g, '<br/>');
+      return out;
+    }
+
+    async function submitChatMessage() {
+      const input = document.getElementById('chatTextInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      const container = document.getElementById('chatMessages');
+
+      // Append user bubble
+      const userDiv = document.createElement('div');
+      userDiv.className = 'flex justify-end';
+      userDiv.innerHTML = `
+        <div class="p-3 rounded-2xl rounded-tr-none bg-blue-600 text-white font-medium shadow-md max-w-[85%] text-xs">
+          ${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+        </div>
+      `;
+      container.appendChild(userDiv);
+
+      // Typing indicator
+      const typingDiv = document.createElement('div');
+      typingDiv.id = 'chatTypingIndicator';
+      typingDiv.className = 'flex items-start gap-2.5';
+      typingDiv.innerHTML = `
+        <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 mt-0.5">AI</div>
+        <div class="p-2.5 rounded-2xl rounded-tl-none bg-slate-900 border border-slate-800 text-slate-400 text-xs flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" style="animation-delay: 0.2s"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" style="animation-delay: 0.4s"></span>
+          <span class="text-[11px] text-slate-400 ml-1">Analyzing risk factors...</span>
+        </div>
+      `;
+      container.appendChild(typingDiv);
+      container.scrollTop = container.scrollHeight;
+
+      let replyData = null;
+
+      // Try Backend API first
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
+        if (res.ok) {
+          replyData = await res.json();
+        }
+      } catch (err) {
+        // Fallback to client-side autonomous NLP engine
+      }
+
+      if (!replyData) {
+        replyData = clientSideRiskAdvisor(text);
+      }
+
+      // Remove typing indicator
+      const typingEl = document.getElementById('chatTypingIndicator');
+      if (typingEl) typingEl.remove();
+
+      // Append Bot Response
+      const botDiv = document.createElement('div');
+      botDiv.className = 'flex items-start gap-2.5';
+      let contentHtml = `<div class="p-3 rounded-2xl rounded-tl-none bg-slate-900 border border-slate-800 text-slate-200 space-y-2 shadow-md max-w-[88%]">`;
+      contentHtml += formatMarkdown(replyData.reply);
+
+      // If customer audit card is returned
+      if (replyData.type === 'customer_audit' && replyData.customer) {
+        const c = replyData.customer;
+        contentHtml += `
+          <div class="mt-2.5 p-2.5 rounded-xl bg-slate-950/80 border border-blue-500/30 flex items-center justify-between gap-2">
+            <div>
+              <div class="font-bold text-white text-xs">${c.company_name}</div>
+              <div class="text-[10px] text-slate-400 font-mono">${c.customer_id} • ${(c.churn_probability * 100).toFixed(1)}% Churn Risk</div>
+            </div>
+            <button onclick="openCustomerModal('${c.customer_id}')" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] transition-all flex items-center gap-1 shadow">
+              <span>Inspect 360</span>
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        `;
+      }
+
+      // If top accounts list is returned
+      if (replyData.type === 'accounts_list' && replyData.accounts) {
+        contentHtml += `<div class="mt-2 space-y-1.5">`;
+        replyData.accounts.forEach(acc => {
+          contentHtml += `
+            <div class="p-2 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-white text-[11px]">${acc.company_name}</span>
+                <span class="text-[10px] font-mono text-rose-400 ml-1.5">${(acc.churn_probability*100).toFixed(1)}%</span>
+              </div>
+              <button onclick="openCustomerModal('${acc.customer_id}')" class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-300 border border-blue-500/40 text-[10px] font-semibold hover:bg-blue-600 hover:text-white transition-all">
+                Audit
+              </button>
+            </div>
+          `;
+        });
+        contentHtml += `</div>`;
+      }
+
+      contentHtml += `</div>`;
+      botDiv.innerHTML = `
+        <div class="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 mt-0.5">AI</div>
+        ${contentHtml}
+      `;
+      container.appendChild(botDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Client-Side Autonomous Risk NLP Advisor Engine
+    function clientSideRiskAdvisor(query) {
+      const q = query.toLowerCase().trim();
+      const df = appState.customers;
+
+      // 1. Customer specific inquiry (e.g. CUST-0104 or name)
+      let targetCust = null;
+      const match = q.match(/cust-(\d{4})/);
+      if (match) {
+        const id = `CUST-${match[1]}`;
+        targetCust = df.find(c => c.customer_id.toLowerCase() === id.toLowerCase());
+      } else {
+        targetCust = df.find(c => {
+          const first = c.company_name.toLowerCase().split(' ')[0];
+          return first.length > 3 && q.includes(first);
+        });
+      }
+
+      if (targetCust) {
+        const pb = targetCust.recommended_playbook || {};
+        let driversMd = '';
+        (targetCust.risk_drivers || []).forEach(d => {
+          const icon = d.type === 'negative' ? '🔴' : (d.type === 'positive' ? '🟢' : '⚪');
+          driversMd += `- ${icon} **${d.factor}** (${d.impact}): ${d.detail}\n`;
+        });
+
+        const reply = `### 🔍 Risk Audit Dossier: ${targetCust.company_name} (\`${targetCust.customer_id}\`)
+
+- **Tier:** \`${targetCust.tier}\` | **Industry:** ${targetCust.industry}
+- **Predicted 12m CLV:** **$${targetCust.predicted_clv_12m.toLocaleString()}**
+- **Monthly Spend (MRR):** $${targetCust.monthly_contract_value.toLocaleString()}
+- **Calculated Churn Probability:** **\`${(targetCust.churn_probability * 100).toFixed(1)}%\`** (**${targetCust.risk_tier} Risk**)
+- **Revenue at Risk:** **$${targetCust.clv_at_risk.toLocaleString()}**
+
+#### 🔬 Key Diagnostic Risk Drivers (SHAP Attribution)
+${driversMd}
+
+#### 🚀 Prescribed Next-Best-Action (NBA)
+- **Playbook:** **${pb.title || 'Executive Sponsor Intervention'}**
+- **Channel:** \`${pb.channel || 'White-Glove'}\`
+- **Expected Churn Reduction:** **\`-${pb.churn_reduction_pct || 46}%\`**
+- **Estimated Campaign Cost:** $${(pb.intervention_cost || 450).toLocaleString()}
+- **Projected Net Protected Equity:** **$${(pb.saved_equity_clv || 18400).toLocaleString()}**
+`;
+        return {
+          reply: reply,
+          type: 'customer_audit',
+          customer: targetCust
+        };
+      }
+
+      // 2. Top At-Risk Query
+      if (q.includes('top') || q.includes('who is at risk') || q.includes('critical accounts') || q.includes('danger')) {
+        const critical = [...df].sort((a, b) => b.clv_at_risk - a.clv_at_risk).slice(0, 4);
+        let reply = "### ⚠️ Top High-Value Accounts at Urgent Risk\n\n";
+        reply += "Here are the top accounts by **Revenue at Risk** requiring immediate retention triage:\n\n";
+        critical.forEach(c => {
+          reply += `- **${c.company_name}** (\`${c.customer_id}\`)\n`;
+          reply += `  - **Tier:** ${c.tier} • **Industry:** ${c.industry}\n`;
+          reply += `  - **Churn Likelihood:** \`${(c.churn_probability * 100).toFixed(1)}%\` (${c.risk_tier})\n`;
+          reply += `  - **Revenue at Risk:** **$${c.clv_at_risk.toLocaleString()}** (Predicted CLV: $${c.predicted_clv_12m.toLocaleString()})\n\n`;
+        });
+        reply += "👉 *Click any card below to launch an immediate diagnostic inspection.*";
+        return {
+          reply: reply,
+          type: 'accounts_list',
+          accounts: critical
+        };
+      }
+
+      // 3. Portfolio Summary
+      if (q.includes('portfolio') || q.includes('summary') || q.includes('overview') || q.includes('kpi') || q.includes('total risk')) {
+        const kpis = appState.overview.kpis;
+        const reply = `### 📊 Portfolio Risk & Health Summary
+
+- **Total Predicted Customer Equity (12m):** **$${(kpis.total_predicted_clv / 1000000).toFixed(2)}M**
+- **Revenue at Risk:** **$${(kpis.total_revenue_at_risk / 1000000).toFixed(2)}M** (\`${((kpis.total_revenue_at_risk / kpis.total_predicted_clv) * 100).toFixed(1)}%\` of total equity)
+- **Average Churn Likelihood:** \`${kpis.avg_churn_probability.toFixed(1)}%\` across \`${kpis.total_accounts.toLocaleString()}\` accounts
+- **Net Retention Rate (NRR):** \`${kpis.net_retention_rate_nrr.toFixed(1)}%\` (Healthy Expansion)
+- **Top 20% Pareto Concentration:** \`${kpis.top_20_pareto_clv_share_pct.toFixed(1)}%\`
+
+**Risk Management Recommendation:** Allocate retention spend using the **What-If Lab** to protect high-impact accounts at renewal cliffs.`;
+        return { reply: reply, type: 'summary' };
+      }
+
+      // 4. Emergency Cancellation Threat & Revenue Crisis
+      if (q.includes('cancel') || q.includes('threatening') || q.includes('trouble') || q.includes('crisis') || q.includes('losing revenue') || q.includes('revenue drop') || q.includes('arr drop')) {
+        const reply = `### [EMERGENCY REVENUE RESCUE PROTOCOL]
+
+**Situation Assessment:** The account is in imminent churn danger. Losing this account creates an immediate top-line ARR contraction and damages Net Retention Rate (NRR).
+
+#### 🚨 3-Step Emergency Turnaround Action Plan:
+
+1. **Immediate De-escalation Call (Within 2 Hours):**
+   - *Objective:* Shift the conversation from "We want to cancel" to "Here is the operational blocker."
+   - *Verbatim Script for Executive / CSM:*
+     > *"Hi [Name], I completely understand your frustration regarding this matter. Our VP of Customer Success and I reviewed your account this morning. Before we finalize any cancellation paperwork, give us 48 hours to present a customized preservation plan that addresses your exact concerns without forcing you to write off your historical data and integrations."*
+
+2. **The Revenue Preservation Bridge (Downscale Instead of Churn):**
+   - **Option A (The Maintenance Pause):** Freeze billing for 60 days while retaining account history and data access for a nominal 15% maintenance fee.
+   - **Option B (The Core Tier Downscale):** Downscale to core seats, preserving 60% of ARR rather than losing 100%.
+   - **Option C (Multi-Year Trade-Off):** Grant a 15% concession ONLY in exchange for a 24-month contract commitment. *Never discount without term expansion.*
+
+3. **Executive Alignment & ROI Re-Demonstration:**
+   - Deploy an emergency Solution Architect to resolve critical blockers and provide an **Executive Business Review (EBR) Value Memo** demonstrating proven cost savings.
+
+*Ask me: "Audit [Account ID]" to evaluate account-specific contract numbers and calculate optimal concessions.*`;
+        return { reply: reply, type: 'crisis_emergency' };
+      }
+
+      // 5. Budget Cuts & Price Resistance
+      if (q.includes('budget') || q.includes('too expensive') || q.includes('afford') || q.includes('downsize') || q.includes('cost reduction')) {
+        const reply = `### [REVENUE ADVISORY: Budget Cut & Price Resistance Defense]
+
+**Diagnosis:** Customer is experiencing corporate cost reduction or cash flow pressure. Flat price rejection without value re-framing leads to 100% ARR forfeiture.
+
+#### 🛡️ Commercial Defense Strategy:
+
+1. **Conduct an ROI Value Audit:**
+   - Calculate the customer's *Cost of Replacement*: migrating to a competitor or manual workflows costs an estimated $18,000 - $35,000 in engineering setup and retraining.
+   - Re-frame software cost as an operational efficiency driver rather than a discretionary expense.
+
+2. **The "Give-to-Get" Concession Framework:**
+   - **Rule:** Never grant an unconditional discount; it destroys pricing power and signals that your product was overpriced.
+   - **Counter-Offer A:** Offer a 12% renewal incentive in exchange for moving from monthly to annual upfront billing (accelerating immediate cash flow).
+   - **Counter-Offer B:** Restructure seat tiers: reduce inactive licenses by 20% while locking in a 2-year enterprise agreement.
+
+3. **Verbatim Negotiation Script:**
+   > *"We know your team is under strict budget constraints this quarter. Rather than walking away from the workflow infrastructure you've built, let's restructure your licensing: we will trim inactive seats and defer milestone billing, keeping your monthly spend within your CFO's target while maintaining your critical operational capabilities."*`;
+        return { reply: reply, type: 'budget_defense' };
+      }
+
+      // 6. Competitor Threat & Poaching Defense
+      if (q.includes('competitor') || q.includes('cheaper') || q.includes('poach') || q.includes('alternative') || q.includes('switch')) {
+        const reply = `### [REVENUE ADVISORY: Competitor Poaching & Price War Defense]
+
+**Diagnosis:** A competitor is targeting your account with aggressive introductory discounting or predatory pricing.
+
+#### 🛡️ 4-Phase Counter-Strategy:
+
+1. **Expose the "Hidden Total Cost of Ownership (TCO)":**
+   - Highlight the hidden migration friction: API reconfiguration, webhook re-routing, historical telemetry loss, and 6-8 weeks of developer onboarding downtime.
+   - Point out introductory discount traps: competitors offer 40% off in Year 1, followed by a mandatory 60% price increase in Year 2.
+
+2. **Feature Superiority Audit:**
+   - Benchmark the specific workflow dependencies the customer relies on that the competitor lacks (e.g. enterprise SLA, SOC2 Type II compliance, custom webhooks, dedicated CSM).
+
+3. **Verbatim Commercial Counter-Script:**
+   > *"We respect [Competitor], but their platform lacks our enterprise redundancy and API integration depth. A migration will require an estimated 120 engineering hours from your team. We value our partnership: let's match their contract value on a multi-year agreement so you get their pricing without risking a disruptive migration."*`;
+        return { reply: reply, type: 'competitor_defense' };
+      }
+
+      // 7. Mathematical Formulation Query
+      if (q.includes('clv') || q.includes('bg/nbd') || q.includes('how is clv') || q.includes('calculate') || q.includes('formula')) {
+        const reply = `### 📐 How Customer Lifetime Value (CLV) is Calculated
+
+OmniPulse utilizes the **BG/NBD (Beta-Geometric / Negative Binomial Distribution)** and **Gamma-Gamma** models (Fader & Hardie, 2005):
+
+1. **Transaction Rate ($\lambda$):** Active purchasing follows a Poisson process with rate $\lambda \sim \\text{Gamma}(r, \\alpha)$.
+2. **Latent Churn Dropout ($p$):** At each transaction, unobserved attrition occurs with probability $p \sim \\text{Beta}(a, b)$.
+3. **Probability of Being Active:**
+   $$P(\\text{Alive}) = \\frac{1}{1 + \\frac{a}{b + x - 1} \\left(\\frac{\\alpha + T}{\\alpha + t_x}\\right)^{r+x}}$$
+4. **Monetary Bayesian Shrinkage:** Average order spend is dynamically balanced between individual history and population priors.
+5. **Discounted CLV:** Calculated over 12 and 24 months factoring in gross margins and annual cost of capital.`;
+        return { reply: reply, type: 'theory' };
+      }
+
+      // 8. Causal Uplift
+      if (q.includes('uplift') || q.includes('persuadables') || q.includes('causal') || q.includes('sleeping dog')) {
+        const reply = `### ⚖️ Causal Uplift vs Standard Churn Scoring
+
+Standard churn models predict **who is likely to leave**. Causal Uplift models answer: **who will stay *because* we intervened?**
+
+- **🎯 1. Persuadables:** Churn if untreated, stay if treated. **Target 100% of retention budget here!**
+- **🛑 2. Sleeping Dogs:** Inactive accounts on autopay. Sending them an outreach email alerts them to cancel! Never contact.
+- **💰 3. Sure Things:** High engagement loyalists who renew regardless. Giving discounts is pure margin dilution.
+- **⚠️ 4. Lost Causes:** Customers with fundamental mismatch or bankruptcy. High-touch spend yields 0% ROI.`;
+        return { reply: reply, type: 'uplift' };
+      }
+
+      // 9. Playbooks
+      if (q.includes('playbook') || q.includes('strategy') || q.includes('action') || q.includes('mitigate')) {
+        const reply = `### 🛡️ Retention Mitigation Playbooks Catalog
+
+OmniPulse features 5 automated Next-Best-Action (NBA) intervention playbooks:
+
+1. **Executive Sponsor & High-Touch CSM:**
+   - *Target:* Enterprise VIPs with unresolved P1 outages or CSAT drops.
+   - *Expected Churn Reduction:* **-46%** | *Cost:* $450
+2. **Commercial Restructure & 12% Loyalty Incentive:**
+   - *Target:* High-ARR accounts approaching annual renewal cliffs.
+   - *Expected Churn Reduction:* **-52%** | *Cost:* 8% ARR concession
+3. **Accelerated Feature Adoption Sprint:**
+   - *Target:* Accounts with low feature adoption (<35%) or telemetry drops.
+   - *Expected Churn Reduction:* **-34%** | *Cost:* $95
+4. **Proactive Health Check-in (Concierge):**
+   - *Target:* Mid-market accounts showing early drift.
+   - *Expected Churn Reduction:* **-28%** | *Cost:* $60
+5. **Automated Product Re-engagement:**
+   - *Target:* Growth/SMB accounts.
+   - *Expected Churn Reduction:* **-16%** | *Cost:* $8`;
+        return { reply: reply, type: 'playbooks' };
+      }
+
+      // Default Response
+      const reply = `### 👋 PulseAI Risk Advisor at your service!
+
+I can help you understand portfolio risk, investigate specific accounts, and design mitigation strategies. 
+
+**Try asking me:**
+- 🔍 *"Audit CUST-0104"* or *"Why is Synthetix at risk?"*
+- ⚠️ *"Who are the top accounts at risk?"*
+- 📊 *"Show me portfolio health summary"*
+- 📐 *"How is CLV calculated in the BG/NBD model?"*
+- 🛡️ *"Explain the 4 causal uplift quadrants (Persuadables vs Sleeping Dogs)"*
+- 💡 *"What retention playbooks should we run this quarter?"*`;
+      return { reply: reply, type: 'help' };
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== document.getElementById('globalSearchInput') && document.activeElement !== document.getElementById('chatTextInput')) {
+        e.preventDefault();
+        document.getElementById('globalSearchInput').focus();
+      }
+      if (e.key === 'Escape') {
+        if (isChatOpen) toggleChatbot();
+        else closeCustomerModal();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadData();
+    });
+  </script>
+</body>
+</html>
