@@ -115,6 +115,20 @@
       background: #60a5fa;
     }
 
+    /* Stock Market Ticker Marquee */
+    @keyframes ticker-marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-ticker {
+      display: flex;
+      width: 200%;
+      animation: ticker-marquee 28s linear infinite;
+    }
+    .animate-ticker:hover {
+      animation-play-state: paused;
+    }
+
     /* Math formula boxes */
     .math-block {
       background: rgba(10, 15, 26, 0.95);
@@ -445,21 +459,43 @@
       </div>
     </div>
 
-    <!-- TAB 2.5: Intra-Day Temporal Radar (Mon–Sat | 9 AM – 4 PM) -->
+    <!-- TAB 2.5: Intra-Day Temporal Radar (Mon–Sat | 9 AM – 4 PM) - Stock Market Live Trading Terminal -->
     <div id="tabContent-intraday" class="hidden space-y-6">
-      <!-- Operational Control Header -->
+
+      <!-- 1. Live Stock Market Ticker Marquee Tape -->
+      <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/90 shadow-xl shadow-cyan-950/10 p-2.5">
+        <div class="flex items-center justify-between gap-2 mb-2 border-b border-slate-800/80 pb-1.5 px-2">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> LIVE MARKET FEED
+            </span>
+            <span class="text-xs font-mono text-slate-300 font-semibold" id="marketSessionBanner">MON–SAT TRADING HOURS (09:00 AM – 04:00 PM EST) • REGULAR TRADING SESSION</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono text-slate-400">EXCHANGE STATUS:</span>
+            <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-extrabold border border-cyan-500/40" id="marketStatusIndicator">MARKET OPEN</span>
+          </div>
+        </div>
+        <div class="overflow-hidden w-full whitespace-nowrap py-1">
+          <div id="intradayTickerTape" class="animate-ticker inline-flex items-center gap-8 text-xs font-mono">
+            <!-- Populated dynamically with live ticker symbols -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Operational Control Header -->
       <div class="glass-card rounded-2xl p-5 border border-cyan-500/30 shadow-lg shadow-cyan-500/5 space-y-4">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
           <div>
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold uppercase tracking-wider">Temporal Predictive Forecast</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold uppercase tracking-wider">Temporal Predictive Terminal</span>
               <span class="text-xs text-slate-400 font-mono">Operating Window: Mon–Sat • 09:00 AM – 04:00 PM</span>
             </div>
             <h2 class="text-lg font-bold text-white mt-1 flex items-center gap-2">
               <span>⏱️ Intra-Day Temporal Predictive Radar</span>
               <span class="text-xs font-normal text-slate-400">• Day-to-Day & Hour-to-Hour Telemetry, Risk & Revenue</span>
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Forecast dynamic churn probability, telemetry velocity, and transaction revenue across 48 operational business-hour intervals.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Forecast dynamic churn probability, telemetry velocity, and transaction revenue across 48 operational business-hour intervals like a live financial exchange.</p>
           </div>
 
           <!-- Live Time Display & Simulation Controls -->
@@ -500,6 +536,42 @@
             </button>
           </div>
         </div>
+
+        <!-- 3. Market Session Phase & OHLC Ribbon -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 bg-slate-950/90 p-3 rounded-xl border border-slate-800 text-xs font-mono shadow-inner">
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">Session Phase</div>
+            <div class="text-cyan-300 font-bold truncate text-[11px]" id="marketPhaseDisplay">Opening Bell</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">Open (09:00)</div>
+            <div class="text-white font-bold" id="marketOpenDisplay">$0.00</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">High (Max)</div>
+            <div class="text-emerald-400 font-bold" id="marketHighDisplay">$0.00</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">Low (Min)</div>
+            <div class="text-rose-400 font-bold" id="marketLowDisplay">$0.00</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">Close (Settle)</div>
+            <div class="text-white font-bold" id="marketCloseDisplay">$0.00</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">Delta / Chg</div>
+            <div class="font-bold text-emerald-400" id="marketChangeDisplay">+$0.00 (0.0%)</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">Sentiment</div>
+            <div class="font-extrabold text-[10px] text-emerald-400" id="marketSentimentDisplay">BULLISH</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">Volume / VIX</div>
+            <div class="text-cyan-300 font-bold" id="marketVolumeDisplay">0 Ct. | 0.0</div>
+          </div>
+        </div>
       </div>
 
       <!-- 4 Slot KPI Cards -->
@@ -535,8 +607,48 @@
 
       <!-- Main Visualizations: Heatmap & Timeseries (2 Cols) -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Left: 6x8 Heatmap Matrix + Timeseries Curve (7 Cols) -->
+        <!-- Left: Candlestick Terminal + 6x8 Heatmap Matrix (7 Cols) -->
         <div class="lg:col-span-7 space-y-6">
+
+          <!-- TradingView-Style Financial Candlestick / Volume Terminal -->
+          <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <span>📊 Financial Candlestick & Volume Terminal</span>
+                </h3>
+                <p class="text-[11px] text-slate-400">Intraday OHLC price action, sentiment candles, and contract volume.</p>
+              </div>
+
+              <!-- View Switcher -->
+              <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-800 text-[11px]">
+                <button id="viewCandleBtn" onclick="switchIntraDayChartView('candle')" class="px-2.5 py-1 rounded-md font-bold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-400 shadow-sm">
+                  🕯️ Day Candlestick & Volume
+                </button>
+                <button id="viewTrendBtn" onclick="switchIntraDayChartView('trend')" class="px-2.5 py-1 rounded-md font-bold transition-all text-slate-400 hover:text-white border border-transparent">
+                  📈 Full Week (48-Slots)
+                </button>
+              </div>
+            </div>
+
+            <!-- Candlestick Canvas Container -->
+            <div id="intradayCandleContainer" class="w-full relative bg-slate-950/70 rounded-xl p-2 border border-slate-800/80">
+              <canvas id="intradayCandleCanvas" class="w-full h-64 block cursor-pointer"></canvas>
+              <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 pt-1.5 px-2 border-t border-slate-800/60">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> Bullish Expansion (Close ≥ Open)</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded bg-rose-500"></span> Bearish Contraction (Close &lt; Open)</span>
+                <span>Click candle to scrub hour</span>
+              </div>
+            </div>
+
+            <!-- Full Week Timeseries Chart Container (Hidden by default) -->
+            <div id="intradayTimeseriesContainer" class="hidden w-full relative">
+              <div class="h-64 w-full relative">
+                <canvas id="intradayTimeseriesChart"></canvas>
+              </div>
+            </div>
+          </div>
+
           <!-- 6x8 Heatmap Matrix -->
           <div class="glass-card rounded-2xl p-5 border border-slate-800">
             <div class="flex items-center justify-between mb-3">
@@ -562,21 +674,46 @@
               </div>
             </div>
           </div>
-
-          <!-- Timeseries Chart -->
-          <div class="glass-card rounded-2xl p-5 border border-slate-800">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-sm font-bold text-white">📈 Full Week Diurnal Progression (48 Hourly Intervals)</h3>
-              <span class="text-[10px] text-slate-400 font-mono">Mon 09:00 -> Sat 16:00</span>
-            </div>
-            <div class="h-60 w-full relative">
-              <canvas id="intradayTimeseriesChart"></canvas>
-            </div>
-          </div>
         </div>
 
-        <!-- Right: Operational Prescription & Account Triage (5 Cols) -->
+        <!-- Right: Order Book & Operational Prescription & Account Triage (5 Cols) -->
         <div class="lg:col-span-5 space-y-6">
+
+          <!-- Level-2 Retention Order Book (Market Depth) -->
+          <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold uppercase border border-emerald-500/30">Level-2 Depth</span>
+                <h3 class="text-xs font-bold text-white">Retention Order Book</h3>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60" id="orderBookNetSpread">+Net Flow: $47k ARR</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <!-- Green Bids: Expansion Inflows -->
+              <div class="space-y-1.5">
+                <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-between px-1">
+                  <span>Bids (Upgrades)</span>
+                  <span>Rate</span>
+                </div>
+                <div id="orderBookBids" class="space-y-1 text-[11px] font-mono">
+                  <!-- populated dynamically -->
+                </div>
+              </div>
+
+              <!-- Red Asks: Churn Sell Pressures -->
+              <div class="space-y-1.5">
+                <div class="text-[10px] font-bold text-rose-400 uppercase tracking-wider flex items-center justify-between px-1">
+                  <span>Asks (Threats)</span>
+                  <span>Risk</span>
+                </div>
+                <div id="orderBookAsks" class="space-y-1 text-[11px] font-mono">
+                  <!-- populated dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Operational Prescription Card -->
           <div class="glass-card rounded-2xl p-5 border border-cyan-500/30 space-y-3">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -1143,7 +1280,8 @@
         selectedHour: 11,
         isPlaying: false,
         playTimer: null,
-        data: null
+        data: null,
+        chartView: 'candle'
       }
     };
 
@@ -2234,6 +2372,17 @@
       16: { traffic_pct: 0.85, risk_bias: 1.30, focus: "Daily Close & Escalation Handoff" }
     };
 
+    const MARKET_SESSIONS = {
+      9: "🔔 OPENING BELL (Morning Concurrency Wave)",
+      10: "📈 MORNING RALLY (Peak API Throughput Session)",
+      11: "⚡ MID-MORNING PEAK (High-Concurrency Workload)",
+      12: "🥪 MIDDAY CONSOLIDATION (Platform Batch Window)",
+      13: "📊 AFTERNOON SESSION (Enterprise Workflow Resumption)",
+      14: "🏛️ INSTITUTIONAL POSITIONING (Critical Review Window)",
+      15: "🔥 POWER HOUR (SLA Escalations & High Volatility)",
+      16: "🔔 CLOSING BELL (Daily Settle & On-Call Handoff)"
+    };
+
     function generateClientIntraDaySchedule() {
       const customers = appState.customers || [];
       const totalMRR = customers.reduce((sum, c) => sum + (c.monthly_contract_value || 0), 0) || 1200000;
@@ -2262,6 +2411,31 @@
           const churn = Math.round(Math.min(78.5, Math.max(3.5, baseChurn * combinedMult)) * 100) / 100;
           const velocity = Math.round(Math.min(99.5, Math.max(15.0, 72.0 * dayMeta.base_vol * hourMeta.traffic_pct * variance)) * 10) / 10;
           const incident = Math.round(Math.min(92.0, Math.max(2.0, 18.0 * (churn / 22.0) * variance)) * 10) / 10;
+
+          // Financial OHLC Candlestick Simulation
+          const priceAnchor = rev;
+          const openPrice = Math.round(priceAnchor * (1.0 - (variance - 1.0) * 0.45) * 100) / 100;
+          const closePrice = Math.round(priceAnchor * 100) / 100;
+          const highPrice = Math.round(Math.max(openPrice, closePrice) * (1.0 + Math.abs(variance - 1.0) * 0.65 + 0.012) * 100) / 100;
+          const lowPrice = Math.round(Math.min(openPrice, closePrice) * (1.0 - Math.abs(variance - 1.0) * 0.65 - 0.010) * 100) / 100;
+          const changePrice = Math.round((closePrice - openPrice) * 100) / 100;
+          const changePct = Math.round((changePrice / Math.max(1.0, openPrice)) * 10000) / 100;
+          const sentiment = closePrice >= openPrice ? "BULLISH" : "BEARISH";
+          const volume = Math.round(Math.min(4800, Math.max(250, rev / 35.0)));
+          const vix = Math.round(Math.min(62.0, Math.max(10.5, churn * 1.6 + (100 - velocity) * 0.22)) * 10) / 10;
+
+          const marketData = {
+            session_phase: MARKET_SESSIONS[hour] || "Regular Trading Hours",
+            open: openPrice,
+            high: highPrice,
+            low: lowPrice,
+            close: closePrice,
+            change: changePrice,
+            change_pct: changePct,
+            sentiment: sentiment,
+            volume: volume,
+            vix: vix
+          };
 
           const stagger = (dIdx * 4 + hIdx * 2) % Math.max(1, criticalPool.length - 3);
           const atRiskAccounts = criticalPool.slice(stagger, stagger + 3).map(acc => ({
@@ -2294,7 +2468,8 @@
             severity: severity,
             operational_focus: hourMeta.focus,
             action_recommendation: actionRec,
-            at_risk_accounts: atRiskAccounts
+            at_risk_accounts: atRiskAccounts,
+            market: marketData
           };
 
           schedule[day][hour] = slotData;
@@ -2315,12 +2490,50 @@
             label: `${day.slice(0,3)} ${HOUR_LABELS[hour]}`,
             churn_risk: churn,
             predicted_revenue: rev,
-            telemetry_velocity: velocity
+            telemetry_velocity: velocity,
+            market: marketData
           });
         });
 
         heatmap.push(row);
       });
+
+      // Live Market Tickers Feed
+      const tickers = [
+        { symbol: "$OMNI-COMP", name: "OmniPulse Composite", price: totalMRR, change: "+2.8%", status: "UP" },
+        { symbol: "$NET-EQUITY", name: "Portfolio Net Equity", price: customers.reduce((s, c) => s + (c.predicted_clv_12m || 0), 0) || 5400000, change: "+1.9%", status: "UP" },
+        { symbol: "$VIX-CHURN", name: "Churn Volatility Index", price: Math.round(baseChurn * 10) / 10, change: "-3.5%", status: "DOWN" },
+        { symbol: "$NRR-FUTURES", name: "Net Expansion Rate", price: 114.5, change: "+0.8%", status: "UP" }
+      ];
+
+      criticalPool.slice(0, 6).forEach(c => {
+        const code = "$" + c.company_name.split(' ')[0].toUpperCase().slice(0, 4);
+        const mrrVal = c.monthly_contract_value || 12000;
+        const deltaPct = c.telemetry_velocity_pct || 1.4;
+        tickers.push({
+          symbol: code,
+          name: c.company_name,
+          price: mrrVal,
+          change: (deltaPct >= 0 ? "+" : "") + deltaPct.toFixed(1) + "%",
+          status: deltaPct >= 0 ? "UP" : "DOWN"
+        });
+      });
+
+      // Level-2 Retention Order Book Depth
+      const orderBook = {
+        bids: [
+          { tier: "Enterprise Tier 1", seats: "+50 Seats Expansion", volume_arr: 60000, bid_price: "$12,500/mo", urgency: "High Inflow" },
+          { tier: "Enterprise VIP", seats: "+25 Dedicated Clusters", volume_arr: 48000, bid_price: "$8,200/mo", urgency: "Standard" },
+          { tier: "Mid-Market Growth", seats: "+15 Core Seats", volume_arr: 22000, bid_price: "$3,400/mo", urgency: "Standard" },
+          { tier: "Mid-Market Scale", seats: "API Add-on Module", volume_arr: 15000, bid_price: "$2,100/mo", urgency: "Moderate" }
+        ],
+        asks: [
+          { tier: "Enterprise Core", seats: "Downscale Notice (12 seats)", volume_arr: 24000, ask_price: "$4,000/mo", urgency: "Sell Pressure" },
+          { tier: "Mid-Market VIP", seats: "Cancellation Threat (P1 Outage)", volume_arr: 36000, ask_price: "$5,100/mo", urgency: "Immediate Triage" },
+          { tier: "Growth SMB", seats: "Budget Cut Reduction (20%)", volume_arr: 12000, ask_price: "$1,800/mo", urgency: "Concession Needed" },
+          { tier: "Mid-Market Core", seats: "Competitor Poach Threat", volume_arr: 18000, ask_price: "$2,900/mo", urgency: "High Friction" }
+        ]
+      };
 
       return {
         operating_days: OPERATING_DAYS,
@@ -2329,6 +2542,8 @@
         schedule: schedule,
         heatmap: heatmap,
         timeseries: timeseries,
+        tickers: tickers,
+        order_book: orderBook,
         summary: {
           total_weekly_predicted_volume: Math.round(timeseries.reduce((s, p) => s + p.predicted_revenue, 0)),
           peak_risk_slot: timeseries.reduce((max, p) => p.churn_risk > max.churn_risk ? p : max, timeseries[0]),
@@ -2347,6 +2562,275 @@
         }
       } catch (e) {}
       appState.intraday.data = generateClientIntraDaySchedule();
+    }
+
+    function renderTickerTape(tickers) {
+      const tape = document.getElementById('intradayTickerTape');
+      if (!tape || !tickers || tickers.length === 0) return;
+      const feed = [...tickers, ...tickers]; // Duplicate for seamless infinite marquee loop
+
+      tape.innerHTML = feed.map(t => {
+        const isUp = t.status === 'UP' || (typeof t.change === 'string' && t.change.startsWith('+'));
+        const arrow = isUp ? '▲' : '▼';
+        const color = isUp ? 'text-emerald-400' : 'text-rose-400';
+        const priceFormatted = typeof t.price === 'number' 
+          ? (t.price >= 1000 ? '$' + t.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) : t.price.toFixed(1))
+          : t.price;
+
+        return `
+          <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
+            <span class="text-cyan-300 font-extrabold tracking-wide">${t.symbol}</span>
+            <span class="text-white font-bold">${priceFormatted}</span>
+            <span class="${color} font-semibold flex items-center gap-0.5">${arrow} ${t.change}</span>
+            <span class="text-slate-700 ml-2">•</span>
+          </span>
+        `;
+      }).join('');
+    }
+
+    function renderOrderBook(orderBook) {
+      const bidsCont = document.getElementById('orderBookBids');
+      const asksCont = document.getElementById('orderBookAsks');
+      const spreadBadge = document.getElementById('orderBookNetSpread');
+      if (!orderBook) return;
+
+      const bids = orderBook.bids || [];
+      const asks = orderBook.asks || [];
+      const totalBids = bids.reduce((s, b) => s + (b.volume_arr || 0), 0);
+      const totalAsks = asks.reduce((s, a) => s + (a.volume_arr || 0), 0);
+      const netSpread = totalBids - totalAsks;
+
+      if (spreadBadge) {
+        spreadBadge.innerText = (netSpread >= 0 ? '+Net Flow: $' : '-Net Flow: $') + Math.round(Math.abs(netSpread) / 1000) + 'k ARR';
+        spreadBadge.className = netSpread >= 0 
+          ? 'text-[10px] font-mono text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60'
+          : 'text-[10px] font-mono text-rose-400 font-bold px-2 py-0.5 rounded bg-rose-950/60 border border-rose-800/60';
+      }
+
+      if (bidsCont) {
+        bidsCont.innerHTML = bids.map(b => `
+          <div class="p-1.5 rounded bg-emerald-950/40 border border-emerald-900/60 flex items-center justify-between hover:bg-emerald-950/70 transition-colors">
+            <div>
+              <div class="text-emerald-300 font-bold text-[10px] truncate max-w-[95px]">${b.tier}</div>
+              <div class="text-slate-400 text-[9px] truncate max-w-[95px]">${b.seats}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-emerald-400 font-bold text-[10px]">${b.bid_price}</div>
+              <div class="text-slate-500 text-[9px]">ARR $${Math.round((b.volume_arr || 0)/1000)}k</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (asksCont) {
+        asksCont.innerHTML = asks.map(a => `
+          <div class="p-1.5 rounded bg-rose-950/40 border border-rose-900/60 flex items-center justify-between hover:bg-rose-950/70 transition-colors">
+            <div>
+              <div class="text-rose-300 font-bold text-[10px] truncate max-w-[95px]">${a.tier}</div>
+              <div class="text-slate-400 text-[9px] truncate max-w-[95px]">${a.seats}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-rose-400 font-bold text-[10px]">${a.ask_price}</div>
+              <div class="text-slate-500 text-[9px]">ARR $${Math.round((a.volume_arr || 0)/1000)}k</div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderIntraDayCandleChart(daySlots, activeHour) {
+      const canvas = document.getElementById('intradayCandleCanvas');
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = rect.width || (canvas.parentElement ? canvas.parentElement.clientWidth : 650);
+      const height = 256;
+
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+
+      const ctx = canvas.getContext('2d');
+      if (ctx.resetTransform) ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, height);
+
+      const hours = OPERATING_HOURS;
+      const slots = hours.map(h => daySlots[h] || { 
+        market: { open: 10000, high: 11000, low: 9500, close: 10500, volume: 1500, sentiment: 'BULLISH' }, 
+        churn_risk_index_pct: 15 
+      });
+
+      let minP = Infinity;
+      let maxP = -Infinity;
+      let maxV = 1;
+
+      slots.forEach(s => {
+        const m = s.market || {};
+        const o = m.open || 10000;
+        const c = m.close || 10000;
+        const h = m.high || Math.max(o, c);
+        const l = m.low || Math.min(o, c);
+        if (l < minP) minP = l;
+        if (h > maxP) maxP = h;
+        if ((m.volume || 0) > maxV) maxV = m.volume;
+      });
+
+      const pad = (maxP - minP) * 0.08 || 500;
+      minP = Math.max(0, minP - pad);
+      maxP = maxP + pad;
+      const pRange = maxP - minP || 1;
+
+      const mLeft = 20;
+      const mRight = 65;
+      const mTop = 20;
+      const candleH = 145;
+      const volTop = 180;
+      const volH = 44;
+      const chartW = width - mLeft - mRight;
+      const slotW = chartW / hours.length;
+
+      // 1. Dotted Price Gridlines & Right Axis Labels
+      const gridSteps = 4;
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+
+      for (let i = 0; i <= gridSteps; i++) {
+        const frac = i / gridSteps;
+        const y = mTop + frac * candleH;
+        const pVal = maxP - frac * pRange;
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(mLeft, y);
+        ctx.lineTo(mLeft + chartW, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('$' + (pVal >= 1000 ? (pVal / 1000).toFixed(1) + 'k' : Math.round(pVal)), mLeft + chartW + 6, y);
+      }
+
+      // 2. Volume Baseline
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(mLeft, volTop);
+      ctx.lineTo(mLeft + chartW, volTop);
+      ctx.stroke();
+
+      ctx.fillStyle = '#475569';
+      ctx.fillText('VOL', mLeft + chartW + 6, volTop + volH / 2);
+
+      // 3. Candlesticks & Volume Bars
+      slots.forEach((s, idx) => {
+        const h = hours[idx];
+        const m = s.market || {};
+        const o = m.open || 10000;
+        const c = m.close || 10000;
+        const high = m.high || Math.max(o, c);
+        const low = m.low || Math.min(o, c);
+        const vol = m.volume || 1000;
+        const isBull = c >= o;
+        const isActive = h === activeHour;
+
+        const cx = mLeft + idx * slotW + slotW / 2;
+        const yHigh = mTop + ((maxP - high) / pRange) * candleH;
+        const yLow = mTop + ((maxP - low) / pRange) * candleH;
+        const yOpen = mTop + ((maxP - o) / pRange) * candleH;
+        const yClose = mTop + ((maxP - c) / pRange) * candleH;
+
+        const bodyTop = Math.min(yOpen, yClose);
+        const bodyH = Math.max(3, Math.abs(yClose - yOpen));
+        const bodyW = Math.min(32, Math.max(14, slotW * 0.58));
+
+        // Active Hour Column Accent
+        if (isActive) {
+          ctx.fillStyle = 'rgba(6, 182, 212, 0.08)';
+          ctx.fillRect(cx - slotW / 2, mTop - 5, slotW, height - mTop);
+
+          ctx.strokeStyle = 'rgba(6, 182, 212, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(cx - slotW / 2, mTop - 5, slotW, height - mTop);
+        }
+
+        // High/Low Wick
+        ctx.strokeStyle = isBull ? '#34d399' : '#fb7185';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, yHigh);
+        ctx.lineTo(cx, yLow);
+        ctx.stroke();
+
+        // Candlestick Body
+        ctx.fillStyle = isBull ? 'rgba(16, 185, 129, 0.9)' : 'rgba(244, 63, 94, 0.9)';
+        ctx.strokeStyle = isBull ? '#10b981' : '#f43f5e';
+        ctx.lineWidth = 1;
+        ctx.fillRect(cx - bodyW / 2, bodyTop, bodyW, bodyH);
+        ctx.strokeRect(cx - bodyW / 2, bodyTop, bodyW, bodyH);
+
+        // Volume Bar
+        const vBarH = Math.max(2, (vol / maxV) * volH);
+        const vBarY = volTop + volH - vBarH;
+        ctx.fillStyle = isBull ? 'rgba(16, 185, 129, 0.35)' : 'rgba(244, 63, 94, 0.35)';
+        ctx.fillRect(cx - bodyW / 2, vBarY, bodyW, vBarH);
+
+        // Time Label
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.font = isActive ? 'bold 10px monospace' : '9px monospace';
+        ctx.fillStyle = isActive ? '#22d3ee' : '#94a3b8';
+        ctx.fillText(HOUR_LABELS[h].slice(0, 5), cx, height - 20);
+
+        // Active Marker Tag
+        if (isActive) {
+          ctx.fillStyle = '#22d3ee';
+          ctx.fillText('▲', cx, height - 32);
+        }
+      });
+
+      // Canvas Click Handler
+      canvas.onclick = (e) => {
+        const cRect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - cRect.left;
+        const relX = clickX - mLeft;
+        if (relX >= 0 && relX <= chartW) {
+          const clickedIdx = Math.floor(relX / slotW);
+          if (clickedIdx >= 0 && clickedIdx < hours.length) {
+            selectIntraDaySlot(appState.intraday.selectedDay, hours[clickedIdx]);
+          }
+        }
+      };
+    }
+
+    function switchIntraDayChartView(mode) {
+      appState.intraday.chartView = mode;
+      const candleContainer = document.getElementById('intradayCandleContainer');
+      const trendContainer = document.getElementById('intradayTimeseriesContainer');
+      const candleBtn = document.getElementById('viewCandleBtn');
+      const trendBtn = document.getElementById('viewTrendBtn');
+
+      if (mode === 'candle') {
+        candleContainer?.classList.remove('hidden');
+        trendContainer?.classList.add('hidden');
+        if (candleBtn) candleBtn.className = 'px-2.5 py-1 rounded-md font-bold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-400 shadow-sm';
+        if (trendBtn) trendBtn.className = 'px-2.5 py-1 rounded-md font-bold transition-all text-slate-400 hover:text-white border border-transparent';
+        if (appState.intraday.data) {
+          const daySlots = appState.intraday.data.schedule[appState.intraday.selectedDay] || {};
+          renderIntraDayCandleChart(daySlots, appState.intraday.selectedHour);
+        }
+      } else {
+        candleContainer?.classList.add('hidden');
+        trendContainer?.classList.remove('hidden');
+        if (trendBtn) trendBtn.className = 'px-2.5 py-1 rounded-md font-bold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-400 shadow-sm';
+        if (candleBtn) candleBtn.className = 'px-2.5 py-1 rounded-md font-bold transition-all text-slate-400 hover:text-white border border-transparent';
+        if (appState.intraday.data) {
+          renderIntraDayTimeseriesChart(appState.intraday.data, appState.intraday.selectedDay, appState.intraday.selectedHour);
+        }
+      }
     }
 
     function renderIntraDayWorkspace() {
@@ -2378,14 +2862,51 @@
       // 2. Active Slot Data
       const daySlots = (data.schedule && data.schedule[currentDay]) ? data.schedule[currentDay] : {};
       const slot = daySlots[currentHour] || {};
+      const market = slot.market || {};
 
       document.getElementById('intradayActiveSlotLabel').innerText = `${currentDay} • ${HOUR_LABELS[currentHour] || '11:00 AM'}`;
       document.getElementById('intradayHourSlider').value = currentHour;
 
-      // Slot KPIs
+      // 3. Market Ribbon
+      const phaseElem = document.getElementById('marketPhaseDisplay');
+      if (phaseElem) phaseElem.innerText = market.session_phase || 'Active Trading Session';
+
+      const openElem = document.getElementById('marketOpenDisplay');
+      if (openElem) openElem.innerText = '$' + (market.open || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+      const highElem = document.getElementById('marketHighDisplay');
+      if (highElem) highElem.innerText = '$' + (market.high || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+      const lowElem = document.getElementById('marketLowDisplay');
+      if (lowElem) lowElem.innerText = '$' + (market.low || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+      const closeElem = document.getElementById('marketCloseDisplay');
+      if (closeElem) closeElem.innerText = '$' + (market.close || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+      const chgElem = document.getElementById('marketChangeDisplay');
+      if (chgElem) {
+        const chg = market.change || 0;
+        const chgPct = market.change_pct || 0;
+        chgElem.innerText = `${chg >= 0 ? '+' : ''}$${chg.toFixed(2)} (${chgPct >= 0 ? '+' : ''}${chgPct}%)`;
+        chgElem.className = chg >= 0 ? 'font-bold text-emerald-400' : 'font-bold text-rose-400';
+      }
+
+      const sentElem = document.getElementById('marketSentimentDisplay');
+      if (sentElem) {
+        const isBull = market.sentiment === 'BULLISH';
+        sentElem.innerText = isBull ? 'BULLISH' : 'BEARISH';
+        sentElem.className = isBull ? 'font-extrabold text-[10px] text-emerald-400' : 'font-extrabold text-[10px] text-rose-400';
+      }
+
+      const volElem = document.getElementById('marketVolumeDisplay');
+      if (volElem) {
+        volElem.innerText = `${(market.volume || 0).toLocaleString()} Ct. | ${(market.vix || 18.5).toFixed(1)}`;
+      }
+
+      // 4. Slot KPIs
       document.getElementById('slotRevenueDisplay').innerText = '$' + (slot.predicted_revenue || 0).toLocaleString();
       document.getElementById('slotChurnDisplay').innerText = (slot.churn_risk_index_pct || 0).toFixed(1) + '%';
-      
+
       const churnDisplay = document.getElementById('slotChurnDisplay');
       if (slot.churn_risk_index_pct > 28) {
         churnDisplay.className = 'text-xl lg:text-2xl font-black text-rose-400 font-mono mt-1';
@@ -2397,11 +2918,15 @@
 
       document.getElementById('slotVelocityDisplay').innerText = (slot.telemetry_velocity || 0).toFixed(1) + ' / 100';
       document.getElementById('slotIncidentDisplay').innerText = (slot.incident_likelihood_pct || 0).toFixed(1) + '%';
-      
-      // Operational Focus & Prescription
+
+      // 5. Live Ticker Tape & Order Book
+      renderTickerTape(data.tickers);
+      renderOrderBook(data.order_book);
+
+      // 6. Operational Focus & Prescription
       document.getElementById('slotFocusDisplay').innerText = slot.operational_focus || 'Platform Telemetry Monitoring';
       document.getElementById('slotActionDisplay').innerText = slot.action_recommendation || 'All services operating nominally.';
-      
+
       const sevBadge = document.getElementById('slotSeverityBadge');
       sevBadge.innerText = slot.severity || 'Nominal';
       sevBadge.className = slot.severity === 'Critical' 
@@ -2410,12 +2935,12 @@
             ? 'px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold border border-amber-500/30'
             : 'px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold border border-emerald-500/30');
 
-      // At-Risk Accounts List
+      // 7. At-Risk Accounts List
       const accountsContainer = document.getElementById('slotAtRiskList');
       if (accountsContainer) {
         const accounts = slot.at_risk_accounts || [];
         document.getElementById('slotAtRiskCount').innerText = `${accounts.length} targeted account${accounts.length === 1 ? '' : 's'}`;
-        
+
         if (accounts.length === 0) {
           accountsContainer.innerHTML = '<div class="text-xs text-slate-500 py-3 text-center">Zero critical account alerts during this window.</div>';
         } else {
@@ -2438,11 +2963,15 @@
         }
       }
 
-      // Render 6x8 Heatmap Grid
+      // 8. Render 6x8 Heatmap Grid
       renderIntraDayHeatmap(data, currentDay, currentHour);
 
-      // Render Timeseries Chart
-      renderIntraDayTimeseriesChart(data, currentDay, currentHour);
+      // 9. Render Chart (Candle or Trend depending on view mode)
+      if (appState.intraday.chartView === 'candle') {
+        renderIntraDayCandleChart(daySlots, currentHour);
+      } else {
+        renderIntraDayTimeseriesChart(data, currentDay, currentHour);
+      }
     }
 
     function renderIntraDayHeatmap(data, activeDay, activeHour) {

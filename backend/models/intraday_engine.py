@@ -103,7 +103,30 @@ class IntraDayPredictiveEngine:
                     1
                 )
 
-                # 5. Targeted At-Risk Accounts for this hour
+                # 5. Financial Stock-Market OHLC Candlestick Simulation
+                price_anchor = predicted_hourly_rev
+                open_price = round(price_anchor * (1.0 - (micro_variance - 1.0) * 0.45), 2)
+                close_price = round(price_anchor, 2)
+                high_price = round(max(open_price, close_price) * (1.0 + abs(micro_variance - 1.0) * 0.65 + 0.012), 2)
+                low_price = round(min(open_price, close_price) * (1.0 - abs(micro_variance - 1.0) * 0.65 - 0.010), 2)
+                change_price = round(close_price - open_price, 2)
+                change_pct = round((change_price / max(1.0, open_price)) * 100, 2)
+                candle_sentiment = "BULLISH" if close_price >= open_price else "BEARISH"
+                trading_volume = int(np.clip(predicted_hourly_rev / 35.0, 250, 4800))
+                vix_volatility = round(float(np.clip(hourly_churn_risk * 1.6 + (100 - telemetry_velocity) * 0.22, 10.5, 62.0)), 2)
+
+                market_sessions = {
+                    9: "[OPENING BELL] Morning Concurrency Wave",
+                    10: "[MORNING RALLY] Peak API Throughput Session",
+                    11: "[MID-MORNING PEAK] High-Concurrency Workload",
+                    12: "[MIDDAY CONSOLIDATION] Platform Batch Window",
+                    13: "[AFTERNOON SESSION] Enterprise Workflow Resumption",
+                    14: "[INSTITUTIONAL POSITIONING] Critical Review Window",
+                    15: "[POWER HOUR] SLA Escalations & High Volatility",
+                    16: "[CLOSING BELL] Daily Settle & On-Call Handoff"
+                }
+
+                # 6. Targeted At-Risk Accounts for this hour
                 # Pick 2-3 specific accounts that have telemetry friction during this specific window
                 stagger_idx = (d_idx * 4 + h_idx * 2) % (min(25, len(critical_pool) - 3))
                 slot_accounts = []
@@ -139,7 +162,19 @@ class IntraDayPredictiveEngine:
                     "severity": severity,
                     "operational_focus": hour_meta["focus"],
                     "action_recommendation": action_rec,
-                    "at_risk_accounts": slot_accounts
+                    "at_risk_accounts": slot_accounts,
+                    "market": {
+                        "session_phase": market_sessions.get(hour, "Regular Trading Hours"),
+                        "open": open_price,
+                        "high": high_price,
+                        "low": low_price,
+                        "close": close_price,
+                        "change": change_price,
+                        "change_pct": change_pct,
+                        "sentiment": candle_sentiment,
+                        "volume": trading_volume,
+                        "vix": vix_volatility
+                    }
                 }
 
                 schedule[day][hour] = slot_data
@@ -160,11 +195,47 @@ class IntraDayPredictiveEngine:
                     "label": f"{day[:3]} {HOUR_LABELS[hour]}",
                     "churn_risk": hourly_churn_risk,
                     "predicted_revenue": predicted_hourly_rev,
-                    "telemetry_velocity": telemetry_velocity
+                    "telemetry_velocity": telemetry_velocity,
+                    "market": slot_data["market"]
                 })
                 slot_index += 1
 
             heatmap_matrix.append(day_matrix_row)
+
+        # Generate Live Market Tickers
+        ticker_feed = [
+            {"symbol": "$OMNI-COMP", "name": "OmniPulse Composite Index", "price": round(total_base_mrr, 2), "change": "+2.8%", "status": "UP"},
+            {"symbol": "$NET-EQUITY", "name": "Portfolio Net Equity", "price": round(df_customers['predicted_clv_12m'].sum(), 2), "change": "+1.9%", "status": "UP"},
+            {"symbol": "$VIX-CHURN", "name": "Churn Volatility Index", "price": round(base_portfolio_churn, 1), "change": "-3.5%", "status": "DOWN"},
+            {"symbol": "$NRR-FUTURES", "name": "Net Expansion Rate", "price": 114.5, "change": "+0.8%", "status": "UP"}
+        ]
+        for c in critical_pool[:6]:
+            code = "$" + c["company_name"].split()[0].upper()[:4]
+            mrr_val = c["monthly_contract_value"]
+            delta_pct = round(c.get("telemetry_velocity_pct", 0), 1)
+            ticker_feed.append({
+                "symbol": code,
+                "name": c["company_name"],
+                "price": round(mrr_val, 2),
+                "change": f"{'+' if delta_pct >= 0 else ''}{delta_pct}%",
+                "status": "UP" if delta_pct >= 0 else "DOWN"
+            })
+
+        # Order Book Depth (Expansion Inflows vs Churn Outflows)
+        order_book = {
+            "bids": [
+                {"tier": "Enterprise Tier 1", "seats": "+50 Seats Expansion", "volume_arr": 60000, "bid_price": "$12,500/mo", "urgency": "High Inflow"},
+                {"tier": "Enterprise VIP", "seats": "+25 Dedicated Clusters", "volume_arr": 48000, "bid_price": "$8,200/mo", "urgency": "Standard"},
+                {"tier": "Mid-Market Growth", "seats": "+15 Core Seats", "volume_arr": 22000, "bid_price": "$3,400/mo", "urgency": "Standard"},
+                {"tier": "Mid-Market Scale", "seats": "API Add-on Module", "volume_arr": 15000, "bid_price": "$2,100/mo", "urgency": "Moderate"}
+            ],
+            "asks": [
+                {"tier": "Enterprise Core", "seats": "Downscale Notice (12 seats)", "volume_arr": 24000, "ask_price": "$4,000/mo", "urgency": "Sell Pressure"},
+                {"tier": "Mid-Market VIP", "seats": "Cancellation Threat (P1 Outage)", "volume_arr": 36000, "ask_price": "$5,100/mo", "urgency": "Immediate Triage"},
+                {"tier": "Growth SMB", "seats": "Budget Cut Reduction (20%)", "volume_arr": 12000, "ask_price": "$1,800/mo", "urgency": "Concession Needed"},
+                {"tier": "Mid-Market Core", "seats": "Competitor Poach Threat", "volume_arr": 18000, "ask_price": "$2,900/mo", "urgency": "High Friction"}
+            ]
+        }
 
         return {
             "operating_days": OPERATING_DAYS,
@@ -173,6 +244,8 @@ class IntraDayPredictiveEngine:
             "schedule": schedule,
             "heatmap": heatmap_matrix,
             "timeseries": timeseries_points,
+            "tickers": ticker_feed,
+            "order_book": order_book,
             "summary": {
                 "total_weekly_predicted_volume": round(sum(p["predicted_revenue"] for p in timeseries_points), 2),
                 "peak_risk_slot": max(timeseries_points, key=lambda x: x["churn_risk"]),
